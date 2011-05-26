@@ -3,6 +3,7 @@ package server;
 import java.util.HashMap;
 
 import net.sf.json.JSONObject;
+import net.sf.json.JSONSerializer;
 
 public class Login extends ServerCommand {
 	
@@ -13,8 +14,21 @@ public class Login extends ServerCommand {
 		super(con);
 	}
 	
+	public JSONObject requestSpecification(){
+		HashMap data = new HashMap();
+		data.put("username", "String");
+		data.put("password", "String");
+		return super.specificationMapper("request", data);
+	}
+	
+	public JSONObject responseSpecification(){
+		HashMap data = new HashMap();
+		data.put("auth_key", "String");
+		return super.specificationMapper("response", data);
+	}
+	
 	public String name(){
-		return "get_stock";
+		return "login";
 	}
 	
 	public boolean parseJson(JSONObject data){
@@ -28,10 +42,10 @@ public class Login extends ServerCommand {
 		return true;
 	}
 	
-	public void call(){
+	public void run(){
 		this.con.user = new User(username, password);
 		HashMap data = new HashMap();
-		data.put("user_id", con.user.getUserId());
-		con.respond("login", data);
+		data.put("auth_key", con.user.getAuthKey());
+		con.respond(responseName(), data);
 	}
 }

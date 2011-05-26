@@ -7,7 +7,15 @@ import net.sf.json.JSONObject;
 
 public class Quit extends ServerCommand {
 	
-	Quit(Connection con){
+	public JSONObject requestSpecification(){
+		return super.specificationMapper("request", null);
+	}
+	
+	public JSONObject responseSpecification(){
+		return super.specificationMapper("response", null);
+	}
+	
+	Quit(server.Connection con){
 		super(con);
 	}
 	
@@ -19,7 +27,9 @@ public class Quit extends ServerCommand {
 		return true;
 	}
 	
-	public void call(){
+	public void run(){
+  		HashMap data = new HashMap(); 
+  		con.respond("quit", null);
 		con.close();
 	}
 }

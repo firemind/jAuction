@@ -6,6 +6,18 @@ import net.sf.json.JSONObject;
 
 public class GetMoney extends ServerCommand {
 	
+	public JSONObject requestSpecification(){
+		HashMap data = new HashMap();
+		data.put("auth_key", "String");
+		return super.specificationMapper("request", data);
+	}
+	
+	public JSONObject responseSpecification(){
+		HashMap data = new HashMap();
+		data.put("money", "Integer");
+		return super.specificationMapper("request", data);
+	}
+	
 	private String auth_key;
 	
 	GetMoney(Connection con){
@@ -13,7 +25,7 @@ public class GetMoney extends ServerCommand {
 	}
 	
 	public String name(){
-		return "get_stock";
+		return "get_money";
 	}
 	
 	public boolean parseJson(JSONObject data){
@@ -27,7 +39,7 @@ public class GetMoney extends ServerCommand {
 	}
     
 
-	public void call(){
+	public void run(){
 	  	if(authenticate(auth_key)){
 	  		HashMap data = new HashMap(); 
     		data.put("money", this.con.user.getMoney());

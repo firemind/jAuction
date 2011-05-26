@@ -6,15 +6,18 @@ import net.sf.json.JSONObject;
 import net.sf.json.JSONSerializer;
 import net.sf.json.JSONArray;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.Map;
 
 public class Connection implements Runnable {
-    private Socket server;
+    protected Socket server;
     private String line,input;
     public In in;
     public Out out;
-    private User user;
-    Connection(Socket clientSocket) {
+    protected User user;
+    protected Hashtable serverCommands;
+    Connection(Socket clientSocket, Hashtable serverCommands) {
+      this.serverCommands = serverCommands;
       this.server=clientSocket;
       this.in  = new In (clientSocket);
       this.out = new Out(clientSocket);
@@ -24,39 +27,51 @@ public class Connection implements Runnable {
 		String s;
 		JSONObject json ;
 		String command = null;
-
+		ServerCommand sc = null;
 		while ((s = in.readLine()) != null) {
 			try {
 				json = (JSONObject) JSONSerializer.toJSON(s);
 				command = json.getString("command");
-			}catch(net.sf.json.JSONException e){
-				out.println("bad request: "+s);
-				json = null;
-				command = null;
-			}
-			try {
 				if(json != null && command != null){
-					JSONObject data = json.getJSONObject("data");
-					if (command.equals("get_money")){ 
-						getMoney(data.getString("user_id"));
-				    }else if (command.equals("get_stock")){
-				    	getStock(data.getString("user_id"), data.getInt("resource_id"));
-				    }else if (command.equals("login")){
-					  login(data.getString("username"), data.getString("password"));
-					}else if (command.equals("quit")){
-						out.println("goodbye!");
-						break;
+					if (serverCommands.containsKey(command) == true){ 
+						Class cla = (Class) serverCommands.get(command);
+						try {
+						  sc = (ServerCommand) cla.getDeclaredConstructor(this.getClass()).newInstance(this);
+						}catch(Exception e){
+							System.out.println("Dynamic ServerCommand loading failed");
+							e.printStackTrace();
+						}
 					}else{
-						out.println("bad command: "+command);
+						badRequest();
+					}
+					JSONObject data = json.getJSONObject("data");
+					if(sc != null){
+						if(sc.parseJson(data)){
+						   Thread t = new Thread(sc);
+				           t.start();
+						}else{
+							badRequest();
+						}
+						json = null;
+						command = null;
+						sc = null;
 					}
 				}
 			}catch(net.sf.json.JSONException e){
-				out.println("bad request: "+s);
+				badRequest();
+				System.err.println("bad request: "+s);
 				json = null;
 				command = null;
+				sc = null;
 			}
 		}
-        System.err.println("Closing connection with client");
+		close();
+        
+
+    }
+    
+    public void close(){
+		System.err.println("Closing connection with client");
         out.close();
         in.close();
         try {
@@ -65,52 +80,30 @@ public class Connection implements Runnable {
 		      System.out.println("IOException on socket listen: " + ioe);
 		      ioe.printStackTrace();
 		}  
+    	
+    }
+    public void badRequest(){
+		out.println("bad request");
     }
     
-    private boolean authenticate(String user_id){
-    	if (this.user != null && this.user.getUserId().equals(user_id)){
-    		return true;
-    	}else{
-    		notify("wrong user_id");
-    		return false;
-    	}
-    }
-    
-    private void getStock(String user_id, int resource_id){
-    	if(authenticate(user_id)){
-    		HashMap data = new HashMap(); 
-    		data.put("resource_id", resource_id);
-    		data.put("amount", this.user.getStock(resource_id));
-    		respond("get_stock", data);
-    	}
-    }
-    
-    private void getMoney(String user_id){
-    	if(authenticate(user_id)){
-    		HashMap data = new HashMap(); 
-    		data.put("money", this.user.getMoney());
-    		respond("get_money", data);
-    	}
-    }
-    
-    private void notify(String text){
+    public void notify(String text){
 		HashMap data = new HashMap();
 		data.put("text", text);
 		respond("notify", data);
     }
     
-    private void respond(String command, HashMap data){
-		Map response = new HashMap(); 
+    public void respond(String command, HashMap data){
+		Map response = new HashMap();
 		response.put("command", command);
-		response.put("data", data);
+		if(data != null){
+		  response.put("data", data);
+		}
 		JSONObject jsonObject = JSONObject.fromObject( response );
 		out.println(jsonObject.toString());
     }
     
+    
     private void login(String username, String password){	
-		this.user = new User(username, password);
-		HashMap data = new HashMap();
-		data.put("user_id", user.getUserId());
-		respond("login", data);
+
     }
 }

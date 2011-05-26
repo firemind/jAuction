@@ -17,6 +17,20 @@ public class GetStock extends ServerCommand {
 		return "get_stock";
 	}
 	
+	public JSONObject requestSpecification(){
+		HashMap data = new HashMap();
+		data.put("resource_id", "Integer");
+		data.put("auth_key", "String");
+		return super.specificationMapper("request", data);
+	}
+	
+	public JSONObject responseSpecification(){
+		HashMap data = new HashMap();
+		data.put("resource_id", "Integer");
+		data.put("amount", "Integer");
+		return super.specificationMapper("request", data);
+	}
+	
 	public boolean parseJson(JSONObject data){
 		try {
 			this.auth_key 		= data.getString("user_id");
@@ -28,7 +42,7 @@ public class GetStock extends ServerCommand {
 		return true;
 	}
 	
-	public void call(){
+	public void run(){
 	  	if(authenticate(auth_key)){
 	  		HashMap data = new HashMap(); 
 	  		data.put("resource_id", resource_id);

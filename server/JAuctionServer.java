@@ -5,63 +5,46 @@ import java.net.ServerSocket;
 import net.sf.json.*;
 import org.apache.commons.io.*;
 import java.io.InputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Hashtable;
 
 public class JAuctionServer {
-
+    private static int port = 4444;
+    private static int maxConnections = 0;
+    public static Hashtable serverCommands = new Hashtable();
+    
+    
     public static void main(String[] args) throws Exception {
 
-        // create socket
-        int port = 4444;
-        ServerSocket serverSocket = new ServerSocket(port);
-        System.err.println("Started server on port " + port);
-
-        // repeatedly wait for connections, and process
-        while (true) {
-
-            // a "blocking" call which waits until a connection is requested
-            Socket clientSocket = serverSocket.accept();
-            System.err.println("Accepted connection from client");
-            // open up IO streams
-            In  in  = new In (clientSocket);
-            Out out = new Out(clientSocket);
-            // waits for data and reads it in until connection dies
-            // readLine() blocks until the server receives a new line from client
-            String s;
-            String command = null;
-            JSONObject json;
-            /*System.err.println("trying to read file");
-            InputStream is = JAuctionServer.class.getResourceAsStream("/src/example.txt");
-            System.err.println("file read");
-            String jsonTxt = IOUtils.toString( is );
-            System.err.println("stringed it");
-            JSONObject json = (JSONObject) JSONSerializer.toJSON( jsonTxt );
-            System.err.println("json parsed it");
-            */
-            while ((s = in.readLine()) != null) {
-                try {
-                  json = (JSONObject) JSONSerializer.toJSON(s);
-                  command = json.getString("command");
-                }catch(net.sf.json.JSONException e){
-                	out.println("bad request: "+s);
-                }
-                if(command != null){
-	                out.println("Command: " + command);
-	                if (command.equals("get_money")){ 
-	                  out.println("{command: '"+command+"', response: { money: 2343} }");
-	                }else if (command.equals("quit")){
-	                	out.println("goodbye!");
-	                	break;
-	                }else{
-	                  out.println("bad command: "+command);
-	                }
-                }
-            }
-
-            // close IO streams, then socket
-            System.err.println("Closing connection with client");
-            out.close();
-            in.close();
-            clientSocket.close();
-        }
+    	serverCommands.put("login", Login.class);
+    	serverCommands.put("get_commands", GetCommands.class);
+    	serverCommands.put("get_money", GetMoney.class);
+    	serverCommands.put("get_stock", GetStock.class);
+    	serverCommands.put("quit", Quit.class);
+    	
+	    System.err.println("Started server on port " + port);
+	
+	    int con_counter=0;
+	
+	    try{
+	      ServerSocket serverSocket = new ServerSocket(port);
+	      Socket clientSocket;
+	
+	      while((con_counter++ < maxConnections) || (maxConnections == 0)){
+	
+	        clientSocket = serverSocket.accept();
+	        System.err.println("Accepted connection from client");
+	        
+	        Connection conn_c= new Connection(clientSocket, serverCommands);
+	        Thread t = new Thread(conn_c);
+	        t.start();
+	      }
+	    } catch (IOException ioe) {
+	      System.out.println("IOException on socket listen: " + ioe);
+	      ioe.printStackTrace();
+	    }   
+        
     }
+
 }

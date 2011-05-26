@@ -7,12 +7,12 @@ import java.util.ArrayList;
 public class User {
   private int money;
   private ArrayList<Integer> stock = new ArrayList();
-  private byte[] user_id;
+  private byte[] auth_key;
   User(String username, String password){
     try {
 	  MessageDigest digest = java.security.MessageDigest.getInstance("MD5");
 	  digest.update((username + password).getBytes());
-	  this.user_id = digest.digest();
+	  this.auth_key = digest.digest();
 	 }catch(NoSuchAlgorithmException e){
        System.out.println("No Such Algorithm");
   	 }
@@ -33,7 +33,7 @@ public class User {
 	  }
   }
   
-  public String getUserId(){
-	  return this.user_id.toString();
+  public String getAuthKey(){
+	  return this.auth_key.toString();
   }
 }
