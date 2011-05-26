@@ -50,6 +50,12 @@ public class Connection implements Runnable {
     	  return this.jAuctionServer.auctions;
     }
     
+    protected Auction createAuction(int amount, Resource resource, int duration, User user, int price){
+    	Auction auc = new Auction(amount,resource, duration, user, price);
+    	jAuctionServer.auctions.add(auc);
+    	return auc;
+    }    
+    
     public void run () {
 
         System.err.println("Accepted connection from client");

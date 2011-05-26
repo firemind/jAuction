@@ -35,6 +35,7 @@ public class JAuctionServer {
     	serverCommands.put("get_resource_all", GetResourceAll.class);
     	serverCommands.put("get_auctions", GetAuctions.class);
     	serverCommands.put("get_auctions_all", GetAuctionsAll.class);
+    	serverCommands.put("create_auction", CreateAuction.class);
     	serverCommands.put("quit", Quit.class);
     }
 

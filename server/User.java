@@ -17,8 +17,9 @@ public class User {
        System.out.println("No Such Algorithm");
   	 }
 	 this.money = 5000;
-	 this.stock.add(0, 5);
-	 this.stock.add(1, 10);
+	 this.stock.add(150);
+	 this.stock.add(50);
+	 this.stock.add(100);
   }
   
   public int getMoney(){

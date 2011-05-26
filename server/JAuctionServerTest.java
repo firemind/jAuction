@@ -135,8 +135,8 @@ public class JAuctionServerTest extends TestCase {
 			  assertTrue(json.containsKey("data"));
 			  json = json.getJSONObject("data");
 			  assertTrue(json.containsKey("amount"));
-			  int money = json.getInt("amount");
-			  assertEquals(money, 10);
+			  int amount = json.getInt("amount");
+			  assertEquals(amount, 50);
 		  }catch(net.sf.json.JSONException e){
 			  e.printStackTrace();
 			  fail("Invalid JSON");
@@ -250,7 +250,7 @@ public class JAuctionServerTest extends TestCase {
 			  json = json.getJSONObject("data");
 			  assertTrue(json.containsKey("auctions"));
 			  JSONArray auctions = json.getJSONArray("auctions");
-			  assertTrue(auctions.size() == 4);
+			  assertTrue(auctions.size() > 0);
 			  for( int i = 0; i < auctions.size(); i++){
 				  json = auctions.getJSONObject(i);
 				  assertTrue(json.containsKey("resource_id"));
@@ -265,6 +265,32 @@ public class JAuctionServerTest extends TestCase {
 			  fail("Invalid JSON by get_auctions");
 		  }
 		sendQuit();
+		in.close();
+		printWriter.close();
+		
+	}		
+	
+	public void testLoginAndCreateAuction() {
+
+		sendJson("{command:'login', data: {username: 'mark', password: 'secret'}}");
+        In in = new In (socket);
+		try {
+			  JSONObject json = (JSONObject) JSONSerializer.toJSON(readResponse(in));
+			  assertTrue(json.containsKey("data"));
+			  json = json.getJSONObject("data");
+			  assertTrue(json.containsKey("auth_key"));
+			  String auth_key = json.getString("auth_key");
+			  
+		      sendJson("{command:'create_auction', data:{resource_id : 2,amount: 10,price: 89,duration: 80000,auth_key: '"+auth_key+"'}}");
+		      json = (JSONObject) JSONSerializer.toJSON(readResponse(in));
+			  assertTrue(json.containsKey("data"));
+			  json = json.getJSONObject("data");
+			  assertTrue(json.containsKey("auction_id"));
+		  }catch(net.sf.json.JSONException e){
+			  e.printStackTrace();
+			  fail("Invalid JSON");
+		  }
+		
 		in.close();
 		printWriter.close();
 		
