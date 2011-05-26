@@ -43,7 +43,10 @@ public class JAuctionServerTest extends TestCase {
 
 		assertFalse(socket.isClosed());
 		sendQuit();
-		jsonParse(readResponse());
+
+        In in = new In (socket);
+		jsonParse(readResponse(in));
+		in.close();
 		
 	}
 	
@@ -55,7 +58,7 @@ public class JAuctionServerTest extends TestCase {
 			  return true;
 		  }catch(net.sf.json.JSONException e){
 			  e.printStackTrace();
-			  fail("Invalid JSON by get_commands");
+			  fail("Invalid JSON");
 			  return false;
 		  }
 	}
@@ -65,13 +68,13 @@ public class JAuctionServerTest extends TestCase {
         printWriter.println("{command:'get_commands'}");
         printWriter.flush();
 
-	
+
         In in = new In (socket);
 		try {
-			  JSONObject json = (JSONObject) JSONSerializer.toJSON(readResponse());
-			  assert(json.containsKey("data"));
+			  JSONObject json = (JSONObject) JSONSerializer.toJSON(readResponse(in));
+			  assertTrue(json.containsKey("data"));
 			  json = json.getJSONObject("data");
-			  assert(json.containsKey("commands"));
+			  assertTrue(json.containsKey("commands"));
 			  JSONArray commands = json.getJSONArray("commands");
 			  for( int i = 0; i < commands.size(); i++){
 				  json = commands.getJSONObject(i);
@@ -82,20 +85,228 @@ public class JAuctionServerTest extends TestCase {
 			  e.printStackTrace();
 			  fail("Invalid JSON by get_commands");
 		  }
-		sendQuit();
 		in.close();
+		sendQuit();
 		printWriter.close();
 		
 	}
 
-	public String readResponse(){
+	public void testLoginAndGetMoney(){
+        printWriter.println("{command:'login', data: {username: 'mark', password: 'secret'}}");
+        printWriter.flush();
         In in = new In (socket);
+		try {
+			  JSONObject json = (JSONObject) JSONSerializer.toJSON(readResponse(in));
+			  assertTrue(json.containsKey("data"));
+			  json = json.getJSONObject("data");
+			  assertTrue(json.containsKey("auth_key"));
+			  String auth_key = json.getString("auth_key");
+		
+			  printWriter.println("{command:'get_money', data: {auth_key: '"+auth_key+"'}}");
+		      printWriter.flush();
+		      json = (JSONObject) JSONSerializer.toJSON(readResponse(in));
+			  assertTrue(json.containsKey("data"));
+			  json = json.getJSONObject("data");
+			  assertTrue(json.containsKey("money"));
+			  int money = json.getInt("money");
+			  assertEquals(money, 5000);
+		  }catch(net.sf.json.JSONException e){
+			  e.printStackTrace();
+			  fail("Invalid JSON");
+		  }
+		in.close();
+		sendQuit();
+	}
+
+
+	public void testLoginAndGetStock(){
+        sendJson("{command:'login', data: {username: 'mark', password: 'secret'}}");
+        In in = new In (socket);
+		try {
+			  JSONObject json = (JSONObject) JSONSerializer.toJSON(readResponse(in));
+			  assertTrue(json.containsKey("data"));
+			  json = json.getJSONObject("data");
+			  assertTrue(json.containsKey("auth_key"));
+			  String auth_key = json.getString("auth_key");
+			  
+			  
+			  sendJson("{command:'get_stock', data: {resource_id: 1, auth_key: '"+auth_key+"'}}");
+		      json = (JSONObject) JSONSerializer.toJSON(readResponse(in));
+			  assertTrue(json.containsKey("data"));
+			  json = json.getJSONObject("data");
+			  assertTrue(json.containsKey("amount"));
+			  int money = json.getInt("amount");
+			  assertEquals(money, 10);
+		  }catch(net.sf.json.JSONException e){
+			  e.printStackTrace();
+			  fail("Invalid JSON");
+		  }
+		in.close();
+		sendQuit();
+	}	
+
+	public void testLoginAndGetStockAll(){
+        sendJson("{command:'login', data: {username: 'mark', password: 'secret'}}");
+        In in = new In (socket);
+		try {
+			  JSONObject json = (JSONObject) JSONSerializer.toJSON(readResponse(in));
+			  assertTrue(json.containsKey("data"));
+			  json = json.getJSONObject("data");
+			  assertTrue(json.containsKey("auth_key"));
+			  String auth_key = json.getString("auth_key");
+			  
+			  
+			  sendJson("{command:'get_stock_all', data: {auth_key: '"+auth_key+"'}}");
+		      json = (JSONObject) JSONSerializer.toJSON(readResponse(in));
+			  assertTrue(json.containsKey("data"));
+			  json = json.getJSONObject("data");
+			  JSONArray stocks = json.getJSONArray("stocks");
+			  assertTrue(stocks.size() > 1);
+			  for( int i = 0; i < stocks.size(); i++){
+				  json = stocks.getJSONObject(i);
+				  assertTrue(json.containsKey("amount"));
+				  int amount = json.getInt("amount");
+			  };
+		  }catch(net.sf.json.JSONException e){
+			  e.printStackTrace();
+			  fail("Invalid JSON");
+		  }
+		in.close();
+		sendQuit();
+	}	
+	
+	public void testGetResourceAll() {
+
+        printWriter.println("{command:'get_resource_all'}");
+        printWriter.flush();
+
+	
+        In in = new In (socket);
+		try {
+			  JSONObject json = (JSONObject) JSONSerializer.toJSON(readResponse(in));
+			  assertTrue(json.containsKey("data"));
+			  json = json.getJSONObject("data");
+			  assertTrue(json.containsKey("resources"));
+			  JSONArray stocks = json.getJSONArray("resources");
+			  assertTrue(stocks.size() > 2);
+			  for( int i = 0; i < stocks.size(); i++){
+				  json = stocks.getJSONObject(i);
+				  assertTrue(json.containsKey("name"));
+				  assertTrue(json.containsKey("resource_id"));
+			  }
+		  }catch(net.sf.json.JSONException e){
+			  e.printStackTrace();
+			  fail("Invalid JSON by get_resource_all");
+		  }
+		sendQuit();
+		in.close();
+		printWriter.close();
+		
+	}	
+
+	public void testGetAuctions() {
+
+        printWriter.println("{command:'get_auctions', data: {resource_id: 1}}");
+        printWriter.flush();
+
+	
+        In in = new In (socket);
+		try {
+			  JSONObject json = (JSONObject) JSONSerializer.toJSON(readResponse(in));
+			  assertTrue(json.containsKey("data"));
+			  json = json.getJSONObject("data");
+			  assertTrue(json.containsKey("auctions"));
+			  JSONArray auctions = json.getJSONArray("auctions");
+			  assertTrue(auctions.size() == 2);
+			  for( int i = 0; i < auctions.size(); i++){
+				  json = auctions.getJSONObject(i);
+				  assertTrue(json.containsKey("resource_id"));
+				  assertTrue(json.containsKey("user_id"));
+				  assertTrue(json.containsKey("auction_id"));
+				  assertTrue(json.containsKey("price"));
+				  assertTrue(json.containsKey("amount"));
+				  assertTrue(json.containsKey("timeleft_sec"));
+			  }
+		  }catch(net.sf.json.JSONException e){
+			  e.printStackTrace();
+			  fail("Invalid JSON by get_auctions");
+		  }
+		sendQuit();
+		in.close();
+		printWriter.close();
+		
+	}	
+
+	public void testGetAuctionsAll() {
+
+        printWriter.println("{command:'get_auctions_all'}");
+        printWriter.flush();
+
+	
+        In in = new In (socket);
+		try {
+			  JSONObject json = (JSONObject) JSONSerializer.toJSON(readResponse(in));
+			  assertTrue(json.containsKey("data"));
+			  json = json.getJSONObject("data");
+			  assertTrue(json.containsKey("auctions"));
+			  JSONArray auctions = json.getJSONArray("auctions");
+			  assertTrue(auctions.size() == 4);
+			  for( int i = 0; i < auctions.size(); i++){
+				  json = auctions.getJSONObject(i);
+				  assertTrue(json.containsKey("resource_id"));
+				  assertTrue(json.containsKey("user_id"));
+				  assertTrue(json.containsKey("auction_id"));
+				  assertTrue(json.containsKey("price"));
+				  assertTrue(json.containsKey("amount"));
+				  assertTrue(json.containsKey("timeleft_sec"));
+			  }
+		  }catch(net.sf.json.JSONException e){
+			  e.printStackTrace();
+			  fail("Invalid JSON by get_auctions");
+		  }
+		sendQuit();
+		in.close();
+		printWriter.close();
+		
+	}		
+	
+	public void testGetResource() {
+
+        printWriter.println("{command:'get_resource', data: {resource_id: 1}}");
+        printWriter.flush();
+
+	
+        In in = new In (socket);
+		try {
+			  JSONObject json = (JSONObject) JSONSerializer.toJSON(readResponse(in));
+			  assertTrue(json.containsKey("data"));
+			  json = json.getJSONObject("data");
+			  assertTrue(json.containsKey("name"));
+			  assertTrue(json.containsKey("resource_id"));
+			  String n = json.getString("name");
+			  assertEquals(n, "Silver");
+		  }catch(net.sf.json.JSONException e){
+			  e.printStackTrace();
+			  fail("Invalid JSON by get_resource");
+		  }
+		sendQuit();
+		in.close();
+		printWriter.close();
+		
+	}		
+	
+	public String readResponse(In in){
 		String message;
 		message = in.readLine();
-		in.close();
+		System.err.println(message);
 		return  message;
 	}
 	
+	public void sendJson(String m){
+		System.out.println(m);
+		  printWriter.println(m);
+	      printWriter.flush();
+	}
 	private void sendQuit(){
         printWriter.println("{command:'quit'}");
         printWriter.flush();
@@ -110,10 +321,7 @@ class ServerThread implements Runnable {
     
 	public void run(){
 		
-    	serverCommands.put("login", Login.class);
-    	serverCommands.put("get_money", GetMoney.class);
-    	serverCommands.put("get_stock", GetStock.class);
-    	serverCommands.put("quit", Quit.class);
+		JAuctionServer jAuctionServer = new JAuctionServer();
     	
 		
 	    System.err.println("Started server on port " + port);
@@ -129,7 +337,7 @@ class ServerThread implements Runnable {
 	        clientSocket = serverSocket.accept();
 	        System.err.println("Accepted connection from client");
 	        
-	        Connection conn_c= new Connection(clientSocket, serverCommands);
+	        Connection conn_c= new Connection(clientSocket, jAuctionServer);
 	        Thread t = new Thread(conn_c);
 	        t.start();
 	      }

@@ -26,8 +26,8 @@ public class User {
   }
   
   public int getStock(int resource_id){
-	  if(resource_id > 0 && this.stock.size() >= resource_id){
-		  return this.stock.get(resource_id-1);
+	  if(resource_id >= 0 && this.stock.size() > resource_id){
+		  return this.stock.get(resource_id);
 	  }else{
 		  return 0;
 	  }

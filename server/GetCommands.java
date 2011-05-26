@@ -44,12 +44,12 @@ public class GetCommands extends ServerCommand {
 	public void run(){
 		HashMap data = new HashMap();
 		List commands = new ArrayList();
-  		Enumeration keys = con.serverCommands.keys();
+  		Enumeration keys = con.getServerCommands().keys();
   	    while (keys.hasMoreElements())
   	    {
   	       HashMap command = new HashMap();
   	        ServerCommand c = null;
-			Class cla = (Class) con.serverCommands.get(keys.nextElement());
+			Class cla = (Class) con.getServerCommands().get(keys.nextElement());
 			try {
 				c = (ServerCommand) cla.getDeclaredConstructor(con.getClass()).newInstance(con);
 			}catch(Exception e){

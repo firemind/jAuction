@@ -30,7 +30,7 @@ public class GetMoney extends ServerCommand {
 	
 	public boolean parseJson(JSONObject data){
 		try {
-			this.auth_key 		= data.getString("user_id");
+			this.auth_key 		= data.getString("auth_key");
 		}catch(net.sf.json.JSONException e){
 			con.badRequest();
 			return false;
@@ -43,7 +43,7 @@ public class GetMoney extends ServerCommand {
 	  	if(authenticate(auth_key)){
 	  		HashMap data = new HashMap(); 
     		data.put("money", this.con.user.getMoney());
-	  		con.respond("get_stock", data);
+	  		con.respond(this.responseName(), data);
 	  	}
 	}
 }

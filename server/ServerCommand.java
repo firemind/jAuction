@@ -33,11 +33,11 @@ abstract class ServerCommand implements ServerCommandRules, Runnable{
   
   public Connection con;
   
-  protected boolean authenticate(String user_id){
-  	if (this.con.user != null && this.con.user.getAuthKey().equals(user_id)){
+  protected boolean authenticate(String auth_key){
+  	if (this.con.user != null && this.con.user.getAuthKey().equals(auth_key)){
   		return true;
   	}else{
-  		this.con.notify("wrong user_id");
+  		this.con.notify("wrong auth_key");
   		return false;
   	}
   }

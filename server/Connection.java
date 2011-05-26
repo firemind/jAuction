@@ -7,23 +7,52 @@ import net.sf.json.JSONSerializer;
 import net.sf.json.JSONArray;
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.ArrayList;
 import java.util.Map;
 
 public class Connection implements Runnable {
     protected Socket server;
-    private String line,input;
     public In in;
     public Out out;
     protected User user;
-    protected Hashtable serverCommands;
-    Connection(Socket clientSocket, Hashtable serverCommands) {
-      this.serverCommands = serverCommands;
+    private JAuctionServer jAuctionServer;
+    
+    Connection(Socket clientSocket, JAuctionServer jAuctionServer) {
+      this.jAuctionServer = jAuctionServer;
       this.server=clientSocket;
       this.in  = new In (clientSocket);
       this.out = new Out(clientSocket);
     }
 
+    protected ArrayList<Resource> getResources(){
+    	return this.jAuctionServer.resources;
+    }
+
+    protected ArrayList<User> getUsers(){
+    	return this.jAuctionServer.users;
+    }
+    
+    protected Hashtable getServerCommands(){
+    	return this.jAuctionServer.serverCommands;
+    }
+    
+    protected ArrayList<Auction> getAuctionsByResourceId(int resource_id){
+    	ArrayList<Auction> filtered = new ArrayList();
+    	for( Auction auc : this.jAuctionServer.auctions){
+    		if(this.getResources().indexOf(auc.getResource()) == resource_id){
+    			filtered.add(auc);
+    		}
+    	}
+    	return filtered;
+    }
+    
+    protected ArrayList<Auction> getAuctions(){
+    	  return this.jAuctionServer.auctions;
+    }
+    
     public void run () {
+
+        System.err.println("Accepted connection from client");
 		String s;
 		JSONObject json ;
 		String command = null;
@@ -33,8 +62,8 @@ public class Connection implements Runnable {
 				json = (JSONObject) JSONSerializer.toJSON(s);
 				command = json.getString("command");
 				if(json != null && command != null){
-					if (serverCommands.containsKey(command) == true){ 
-						Class cla = (Class) serverCommands.get(command);
+					if (getServerCommands().containsKey(command) == true){ 
+						Class cla = (Class) getServerCommands().get(command);
 						try {
 						  sc = (ServerCommand) cla.getDeclaredConstructor(this.getClass()).newInstance(this);
 						}catch(Exception e){
@@ -102,8 +131,5 @@ public class Connection implements Runnable {
 		out.println(jsonObject.toString());
     }
     
-    
-    private void login(String username, String password){	
 
-    }
 }
