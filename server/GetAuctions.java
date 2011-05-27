@@ -7,7 +7,7 @@ import net.sf.json.JSONObject;
 
 public class GetAuctions extends ServerCommand {
 
-	private int resource_id;
+	private long resource_id;
 	
 	GetAuctions(Connection con){
 		super(con);
@@ -19,7 +19,7 @@ public class GetAuctions extends ServerCommand {
 	
 	public JSONObject requestSpecification(){
 		HashMap data = new HashMap();
-		data.put("resource_id", "Integer");
+		data.put("resource_id", "Long");
 		return super.specificationMapper("request", data);
 	}
 	
@@ -27,8 +27,8 @@ public class GetAuctions extends ServerCommand {
 		HashMap data = new HashMap();
 		ArrayList<HashMap> auctions = new ArrayList();
 		HashMap auc1 = new HashMap();
-		auc1.put("auction_id", "Integer");
-		auc1.put("resource_id", "Integer");
+		auc1.put("auction_id", "Long");
+		auc1.put("resource_id", "Long");
 		auc1.put("amount", "Integer");
 		auc1.put("user_id", "Integer");
 		auc1.put("price", "Integer");
@@ -42,7 +42,7 @@ public class GetAuctions extends ServerCommand {
 	
 	public boolean parseJson(JSONObject data){
 		try {
-			this.resource_id 	= data.getInt("resource_id");
+			this.resource_id 	= data.getLong("resource_id");
 		}catch(net.sf.json.JSONException e){
 			con.badRequest();
 			return false;
@@ -53,12 +53,12 @@ public class GetAuctions extends ServerCommand {
 	public void run(){
 	  		HashMap data = new HashMap();
 			ArrayList<HashMap> auctions = new ArrayList();
-			for( Auction auction : con.getAuctionsByResourceId(resource_id)){
+			for( Auction auction : con.jAuctionServer.getAuctionsByResourceId(resource_id)){
 				HashMap auc1 = new HashMap();
-				auc1.put("auction_id", con.getAuctions().indexOf(auction));
+				auc1.put("auction_id", auction.getId());
 				auc1.put("resource_id", resource_id);
 				auc1.put("amount", auction.getAmount());
-				auc1.put("user_id", con.getUsers().indexOf(auction.getUser()));
+				auc1.put("user_id", auction.getUser().getId());
 				auc1.put("price", auction.getPrice());
 				auc1.put("timeleft_sec", auction.getTimeleftSec());
 		  		auctions.add(auc1);

@@ -43,7 +43,7 @@ public class Login extends ServerCommand {
 	}
 	
 	public void run(){
-		this.con.user = new User(username, password);
+		this.con.user = con.jAuctionServer.addUser(username, password);
 		HashMap data = new HashMap();
 		data.put("auth_key", con.user.getAuthKey());
 		con.respond(responseName(), data);

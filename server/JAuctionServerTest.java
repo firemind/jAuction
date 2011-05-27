@@ -9,6 +9,7 @@ import java.net.UnknownHostException;
 import java.util.Hashtable;
 import java.lang.ClassNotFoundException;
 import java.io.*;
+import net.sf.json.JsonConfig;
 
 import net.sf.json.JSONObject;
 import net.sf.json.JSONArray;
@@ -206,9 +207,7 @@ public class JAuctionServerTest extends TestCase {
 
 	public void testGetAuctions() {
 
-        printWriter.println("{command:'get_auctions', data: {resource_id: 1}}");
-        printWriter.flush();
-
+        sendJson("{command:'get_auctions', data: {resource_id: 2}}");
 	
         In in = new In (socket);
 		try {
@@ -298,8 +297,7 @@ public class JAuctionServerTest extends TestCase {
 	
 	public void testGetResource() {
 
-        printWriter.println("{command:'get_resource', data: {resource_id: 1}}");
-        printWriter.flush();
+        sendJson("{command:'get_resource', data: {resource_id: 1}}");
 
 	
         In in = new In (socket);

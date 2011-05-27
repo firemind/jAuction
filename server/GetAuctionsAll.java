@@ -2,6 +2,7 @@ package server;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 
 import net.sf.json.JSONObject;
 
@@ -44,14 +45,16 @@ public class GetAuctionsAll extends ServerCommand {
 	public void run(){
 	  		HashMap data = new HashMap();
 			ArrayList<HashMap> auctions = new ArrayList();
-			for( Auction auction : con.getAuctions()){
+	    	Iterator it = con.jAuctionServer.getAuctions().keySet().iterator();
+	    	while(it.hasNext()) {
+	    		Auction auc = (Auction) con.jAuctionServer.getAuctions().get(it.next());
 				HashMap auc1 = new HashMap();
-				auc1.put("auction_id", con.getAuctions().indexOf(auction));
-				auc1.put("resource_id", con.getResources().indexOf(auction.getResource()));
-				auc1.put("amount", auction.getAmount());
-				auc1.put("user_id", con.getUsers().indexOf(auction.getUser()));
-				auc1.put("price", auction.getPrice());
-				auc1.put("timeleft_sec", auction.getTimeleftSec());
+				auc1.put("auction_id", auc.getId());
+				auc1.put("resource_id", auc.getResource().getId());
+				auc1.put("amount", auc.getAmount());
+				auc1.put("user_id", auc.getUser().getId());
+				auc1.put("price", auc.getPrice());
+				auc1.put("timeleft_sec", auc.getTimeleftSec());
 		  		auctions.add(auc1);
 			}
 			data.put("auctions", auctions);

@@ -5,17 +5,21 @@ import java.io.*;
 import net.sf.json.JSONObject;
 import net.sf.json.JSONSerializer;
 import net.sf.json.JSONArray;
+import net.sf.json.JSONException;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.Observer;
+import java.util.Observable;
 
-public class Connection implements Runnable {
+public class Connection implements Runnable, Observer {
     protected Socket server;
     public In in;
     public Out out;
     protected User user;
-    private JAuctionServer jAuctionServer;
+    protected JAuctionServer jAuctionServer;
+    private long last_mutation = 0;
     
     Connection(Socket clientSocket, JAuctionServer jAuctionServer) {
       this.jAuctionServer = jAuctionServer;
@@ -24,37 +28,14 @@ public class Connection implements Runnable {
       this.out = new Out(clientSocket);
     }
 
-    protected ArrayList<Resource> getResources(){
-    	return this.jAuctionServer.resources;
+    public void update(Observable obs, Object obj){
+    	MutationStore mutSto = (MutationStore) obs;
+    	for (MutationStore.Mutation m : mutSto.getMutations(last_mutation)){
+    		last_mutation = m.getId();
+    		send(m.getJson());
+    	}
     }
 
-    protected ArrayList<User> getUsers(){
-    	return this.jAuctionServer.users;
-    }
-    
-    protected Hashtable getServerCommands(){
-    	return this.jAuctionServer.serverCommands;
-    }
-    
-    protected ArrayList<Auction> getAuctionsByResourceId(int resource_id){
-    	ArrayList<Auction> filtered = new ArrayList();
-    	for( Auction auc : this.jAuctionServer.auctions){
-    		if(this.getResources().indexOf(auc.getResource()) == resource_id){
-    			filtered.add(auc);
-    		}
-    	}
-    	return filtered;
-    }
-    
-    protected ArrayList<Auction> getAuctions(){
-    	  return this.jAuctionServer.auctions;
-    }
-    
-    protected Auction createAuction(int amount, Resource resource, int duration, User user, int price){
-    	Auction auc = new Auction(amount,resource, duration, user, price);
-    	jAuctionServer.auctions.add(auc);
-    	return auc;
-    }    
     
     public void run () {
 
@@ -68,8 +49,8 @@ public class Connection implements Runnable {
 				json = (JSONObject) JSONSerializer.toJSON(s);
 				command = json.getString("command");
 				if(json != null && command != null){
-					if (getServerCommands().containsKey(command) == true){ 
-						Class cla = (Class) getServerCommands().get(command);
+					if (jAuctionServer.getServerCommands().containsKey(command) == true){ 
+						Class cla = (Class) jAuctionServer.getServerCommands().get(command);
 						try {
 						  sc = (ServerCommand) cla.getDeclaredConstructor(this.getClass()).newInstance(this);
 						}catch(Exception e){
@@ -127,6 +108,11 @@ public class Connection implements Runnable {
 		respond("notify", data);
     }
     
+    
+    public void send(JSONObject json){
+		out.println(json.toString());
+    }
+    
     public void respond(String command, HashMap data){
 		Map response = new HashMap();
 		response.put("command", command);
@@ -134,7 +120,7 @@ public class Connection implements Runnable {
 		  response.put("data", data);
 		}
 		JSONObject jsonObject = JSONObject.fromObject( response );
-		out.println(jsonObject.toString());
+		send(jsonObject);
     }
     
 

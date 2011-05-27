@@ -55,7 +55,7 @@ public class CreateAuction extends ServerCommand {
 		if(duration < 0)
 			return false;
 		try {
-		  con.getResources().get(resource_id);
+		  con.jAuctionServer.getResource(resource_id);
 		}catch (ArrayIndexOutOfBoundsException e){
 			return false;
 		}
@@ -73,11 +73,10 @@ public class CreateAuction extends ServerCommand {
 			int auction_id;
 	  		HashMap data = new HashMap();
 			if (checkValues()){
-				Resource resource = con.getResources().get(resource_id);
+				Resource resource = con.jAuctionServer.getResource(resource_id);
 				User user = con.user;
-				auction = con.createAuction(amount,resource, duration, user, price);
-				auction_id = con.getAuctions().indexOf(auction);
-				data.put("auction_id", auction_id);
+				Auction auc = con.jAuctionServer.addAuction(amount,resource, duration, user, price);
+				data.put("auction_id", auc.getId());
 			}
 	  		con.respond(this.responseName(), data);
 	  }

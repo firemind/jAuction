@@ -2,6 +2,7 @@ package server;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 
 import net.sf.json.JSONObject;
 
@@ -48,11 +49,12 @@ public class GetStockAll extends ServerCommand {
 	  	if(authenticate(auth_key)){
 	  		HashMap data = new HashMap();
 			ArrayList<HashMap> stocks = new ArrayList();
-			for( Resource resource : con.getResources()){
-				int resource_id =  con.getResources().indexOf(resource);
+			Iterator it = con.jAuctionServer.getResources().keySet().iterator();
+	    	while(it.hasNext()) {
+	    		Resource res  = (Resource) con.jAuctionServer.getResources().get(it.next());
 				HashMap stock = new HashMap();
-		  		stock.put("resource_id", resource_id);
-		  		stock.put("amount", this.con.user.getStock(resource_id));
+		  		stock.put("resource_id", res.getId());
+		  		stock.put("amount", this.con.user.getStock(res.getId()));
 		  		stocks.add(stock);
 			}
 			data.put("stocks", stocks);

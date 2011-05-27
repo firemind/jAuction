@@ -44,12 +44,12 @@ public class GetCommands extends ServerCommand {
 	public void run(){
 		HashMap data = new HashMap();
 		List commands = new ArrayList();
-  		Enumeration keys = con.getServerCommands().keys();
+  		Enumeration keys = con.jAuctionServer.getServerCommands().keys();
   	    while (keys.hasMoreElements())
   	    {
   	       HashMap command = new HashMap();
   	        ServerCommand c = null;
-			Class cla = (Class) con.getServerCommands().get(keys.nextElement());
+			Class cla = (Class) con.jAuctionServer.getServerCommands().get(keys.nextElement());
 			try {
 				c = (ServerCommand) cla.getDeclaredConstructor(con.getClass()).newInstance(con);
 			}catch(Exception e){

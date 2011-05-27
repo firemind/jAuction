@@ -6,7 +6,7 @@ import net.sf.json.JSONObject;
 
 public class GetResource extends ServerCommand {
 	
-	private int resource_id;
+	private long resource_id;
 	
 	GetResource(Connection con){
 		super(con);
@@ -31,7 +31,7 @@ public class GetResource extends ServerCommand {
 	
 	public boolean parseJson(JSONObject data){
 		try {;
-			this.resource_id 	= data.getInt("resource_id");
+			this.resource_id 	= data.getLong("resource_id");
 		}catch(net.sf.json.JSONException e){
 			con.badRequest();
 			return false;
@@ -42,10 +42,9 @@ public class GetResource extends ServerCommand {
 	public void run(){
 	  		HashMap data = new HashMap();
 	  		Resource resource;
-	  		if((con.getResources().size() > resource_id )&& (resource_id >= 0) && 
-	  				(resource = con.getResources().get(resource_id)) != null){
+	  		if(con.jAuctionServer.getResources().containsKey(resource_id)){
 	  			data.put("resource_id", resource_id);
-	  			data.put("name", resource.getName());
+	  			data.put("name", con.jAuctionServer.getResource(resource_id).getName());
 	  		}
 	  		con.respond(this.responseName(), data);
 	}

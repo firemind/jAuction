@@ -8,22 +8,95 @@ import java.io.InputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.HashMap;
+import java.util.Iterator;
 
 public class JAuctionServer {
     private static int port = 4444;
     private static int maxConnections = 0;
-    public Hashtable serverCommands = new Hashtable();
-    public ArrayList<Resource> resources = new ArrayList();
-    public ArrayList<Auction> auctions = new ArrayList();
-    public ArrayList<User> users = new ArrayList();
+    public Hashtable<String, Class<?>> serverCommands = new Hashtable<String, Class<?>>();
+
+    private MutationStore mutationStore;
+    
+    private HashMap<Long, Resource> resources = new HashMap();
+    private HashMap<Long, Auction> auctions = new HashMap();
+    private HashMap<Long, User> users = new HashMap();
+    
+    long nextUserId = 0;
+    long nextAuctionId = 0;
+    long nextResourceId = 0;
+    
     
     JAuctionServer(){
     	this.addServerCommands();
-    	this.addResources();
-    	this.addUsers();	
-    	this.addAuctions();	
     	
+    	Resource r1 = addResource("Gold");
+    	Resource r2 = addResource("Silver");
+    	Resource r3 = addResource("Iron");
+
+    	User u1 = addUser("mark", "secret");
+    	User u2 = addUser("jeff", "ladybug");
+
+    	addAuction( 5, r2, 5000, u1, 92);
+    	addAuction( 20, r3, 5000, u2, 55);
+    	addAuction( 100, r3, 5000, u2, 100);
+    	addAuction( 77, r1, 5000, u1, 34);
+    	
+    	this.mutationStore = new MutationStore();
     }
+    
+    
+    protected Auction addAuction(int amount, Resource resource, int duration, User user, int price){
+    	Auction auc = new Auction(nextAuctionId, amount, resource, duration, user, price);
+    	this.auctions.put(nextAuctionId++, auc);
+    	return auc;
+    }
+    
+    protected Resource addResource(String name){
+    	Resource res = new Resource(nextResourceId, name);
+    	this.resources.put(nextResourceId++, res);
+    	return res;
+    }  
+    
+    protected User addUser(String username, String password){
+    	User user = new User(nextUserId, username, password);
+    	this.users.put(nextUserId++, user);
+    	return user;
+    }  
+
+    
+    protected HashMap getResources(){
+    	return this.resources;
+    }
+    
+    protected Resource getResource(long resource_id){
+    	return this.resources.get(resource_id);
+    }
+    
+    protected HashMap getUsers(){
+    	return this.users;
+    }
+    
+    protected Hashtable getServerCommands(){
+    	return this.serverCommands;
+    }
+    
+    protected ArrayList<Auction> getAuctionsByResourceId(long resource_id){
+    	ArrayList<Auction> filtered = new ArrayList();
+    	Iterator it = this.auctions.keySet().iterator();
+    	while(it.hasNext()) {
+    		Auction auc = this.auctions.get(it.next());
+    		if(auc.getResource().getId() == resource_id){
+    			filtered.add(auc);
+    		}		    
+    	}
+
+    	return filtered;
+    }
+    
+    protected HashMap getAuctions(){
+    	  return this.auctions;
+    }    
     
     private void addServerCommands(){
     	serverCommands.put("login", Login.class);
@@ -39,23 +112,7 @@ public class JAuctionServer {
     	serverCommands.put("quit", Quit.class);
     }
 
-    private void addResources(){
-    	resources.add(new Resource("Gold"));
-    	resources.add(new Resource("Silver"));
-    	resources.add(new Resource("Iron"));
-    }
-    
-    private void addUsers(){
-    	users.add(new User("mark", "secret"));
-    	users.add(new User("jeff", "ladybug"));
-    }
-    
-    private void addAuctions(){
-    	auctions.add(new Auction(5, resources.get(2), 5000, users.get(0), 92));
-    	auctions.add(new Auction(20, resources.get(1), 5000, users.get(1), 55));
-    	auctions.add(new Auction(100, resources.get(1), 5000, users.get(0), 100));
-    	auctions.add(new Auction(77, resources.get(0), 5000, users.get(1), 34));
-    }
+
     
     public static void main(String[] args) throws Exception {
 
@@ -74,6 +131,7 @@ public class JAuctionServer {
 	        clientSocket = serverSocket.accept();
 	        
 	        Connection conn_c= new Connection(clientSocket, jAuctionServer);
+	        jAuctionServer.mutationStore.addObserver(conn_c);
 	        Thread t = new Thread(conn_c);
 	        t.start();
 	      }

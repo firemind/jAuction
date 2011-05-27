@@ -2,6 +2,7 @@ package server;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 
 import net.sf.json.JSONObject;
 
@@ -40,12 +41,14 @@ public class GetResourceAll extends ServerCommand {
 	public void run(){
 	  		HashMap data = new HashMap();
 			ArrayList<HashMap> resources = new ArrayList();
-			for( Resource resource : con.getResources()){
-				int resource_id =  con.getResources().indexOf(resource);
-				HashMap res = new HashMap();
-		  		res.put("resource_id", resource_id);
-		  		res.put("name", resource.getName());
-		  		resources.add(res);
+			Iterator it = con.jAuctionServer.getResources().keySet().iterator();
+	    	while(it.hasNext()) {
+	    		Resource res  = (Resource) con.jAuctionServer.getResources().get(it.next());
+				long resource_id =  res.getId();
+				HashMap response = new HashMap();
+		  		response.put("resource_id", resource_id);
+		  		response.put("name", res.getName());
+		  		resources.add(response);
 			}
 			data.put("resources", resources);
 	  		con.respond(this.responseName(), data);

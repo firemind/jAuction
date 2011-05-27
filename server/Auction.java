@@ -1,13 +1,15 @@
 package server;
 
 public class Auction {
+  private long id;
   private int amount;
   private Resource resource;
   private int duration;
   private int price;
   private User user;
   
-  Auction(int amount, Resource resource, int duration, User user, int price){
+  Auction(long id, int amount, Resource resource, int duration, User user, int price){
+	  this.id = id;
 	  this.amount = amount;
 	  this.resource = resource;
 	  this.duration = duration;
@@ -39,4 +41,7 @@ public class Auction {
 	  return this.duration;
   }
 
+  public long getId(){
+	  return this.id;
+  }
 }
