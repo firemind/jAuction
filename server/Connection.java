@@ -4,11 +4,7 @@ import java.io.*;
 
 import net.sf.json.JSONObject;
 import net.sf.json.JSONSerializer;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONException;
 import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.ArrayList;
 import java.util.Map;
 import java.util.Observer;
 import java.util.Observable;
@@ -45,21 +41,12 @@ public class Connection implements Runnable, Observer {
 		String command = null;
 		ServerCommand sc = null;
 		while ((s = in.readLine()) != null) {
+			System.out.println("Got command: "+s);
 			try {
 				json = (JSONObject) JSONSerializer.toJSON(s);
 				command = json.getString("command");
 				if(json != null && command != null){
-					if (jAuctionServer.getServerCommands().containsKey(command) == true){ 
-						Class cla = (Class) jAuctionServer.getServerCommands().get(command);
-						try {
-						  sc = (ServerCommand) cla.getDeclaredConstructor(this.getClass()).newInstance(this);
-						}catch(Exception e){
-							System.out.println("Dynamic ServerCommand loading failed");
-							e.printStackTrace();
-						}
-					}else{
-						badRequest();
-					}
+					sc = this.jAuctionServer.serverCommandFactory.getCommand(command, this);
 					JSONObject data = json.getJSONObject("data");
 					if(sc != null){
 						if(sc.parseJson(data)){
@@ -98,22 +85,49 @@ public class Connection implements Runnable, Observer {
 		}  
     	
     }
+    
+    
     public void badRequest(){
 		out.println("bad request");
     }
     
+    
+    /** 
+     * Helper method that sends standardized JSON notification.
+     * 
+     * Sent string looks like this: { command: 'notify', data: {'text': 'mytext' } }
+     *    
+     * @param text Text to be sent
+     */
     public void notify(String text){
-		HashMap data = new HashMap();
+		HashMap<String, String> data = new HashMap<String, String>();
 		data.put("text", text);
 		respond("notify", data);
     }
     
-    
+    /** 
+     * Formats JSON Object and sends it through the connection
+     * 
+     *    
+     * @param json Instance of net.sf.json.JSONObject;
+     */
     public void send(JSONObject json){
+		System.err.println("Sending Message: "+json.toString());
 		out.println(json.toString());
     }
     
-    public void respond(String command, HashMap data){
+    /**
+     * Formats command name and data hash to JSON and sends it through the socket.
+     *
+     *
+     * Format should look like this: 
+     * { command: 'command_name', data: { ... } }
+     *
+     * @param command Name of the command
+     * @param data HashMap that is converted to JSON and sent as data attribute
+     */
+    @SuppressWarnings("unchecked")
+	public void respond(String command, HashMap data){
 		Map response = new HashMap();
 		response.put("command", command);
 		if(data != null){

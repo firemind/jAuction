@@ -1,5 +1,9 @@
 package server;
 
+import java.util.HashMap;
+
+import net.sf.json.JSONObject;
+
 public class Auction {
   private long id;
   private int amount;
@@ -43,5 +47,24 @@ public class Auction {
 
   public long getId(){
 	  return this.id;
+  }
+  
+  public JSONObject soldJson(){
+	  	HashMap data = new HashMap();
+		data.put("auction_id", this.id);
+		JSONObject jsonObject = JSONObject.fromObject( data );
+		return jsonObject;
+	  }
+  
+  public JSONObject toJson(){
+  	HashMap data = new HashMap();
+	data.put("auction_id", this.id);
+	data.put("price", this.price);
+	data.put("amount", this.amount);
+	data.put("timeleft_sec", this.getTimeleftSec());
+	data.put("user_id", this.user.getId());
+	data.put("resource_id", this.resource.getId());
+	JSONObject jsonObject = JSONObject.fromObject( data );
+	return jsonObject;
   }
 }

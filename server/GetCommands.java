@@ -48,19 +48,14 @@ public class GetCommands extends ServerCommand {
   	    while (keys.hasMoreElements())
   	    {
   	       HashMap command = new HashMap();
-  	        ServerCommand c = null;
-			Class cla = (Class) con.jAuctionServer.getServerCommands().get(keys.nextElement());
-			try {
-				c = (ServerCommand) cla.getDeclaredConstructor(con.getClass()).newInstance(con);
-			}catch(Exception e){
-				System.out.println("Dynamic ServerCommand loading failed");
-				e.printStackTrace();
-			}
-  	       command.put("command", c.name());
-  	       command.put("request", c.requestSpecification());
-  	       command.put("response", c.responseSpecification());
-  		   commands.add(command );
-  		   data.put("commands", commands);
+  	       ServerCommand c = con.jAuctionServer.serverCommandFactory.getCommand(keys.nextElement().toString(), con);
+  	       if (c != null){
+	  	       command.put("command", c.name());
+	  	       command.put("request", c.requestSpecification());
+	  	       command.put("response", c.responseSpecification());
+	  		   commands.add(command );
+	  		   data.put("commands", commands);
+  	       }
   		}
   		con.respond(this.responseName(), data);
 	}

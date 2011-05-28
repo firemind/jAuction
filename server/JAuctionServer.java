@@ -1,10 +1,14 @@
+/**
+ * Java Auctionhouse
+ *
+ * @author Michael Gerber
+ * @version 0.1.0
+ */
+
 package server;
 
 import java.net.Socket;
 import java.net.ServerSocket;
-import net.sf.json.*;
-import org.apache.commons.io.*;
-import java.io.InputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Hashtable;
@@ -14,13 +18,13 @@ import java.util.Iterator;
 public class JAuctionServer {
     private static int port = 4444;
     private static int maxConnections = 0;
-    public Hashtable<String, Class<?>> serverCommands = new Hashtable<String, Class<?>>();
 
     private MutationStore mutationStore;
+    protected ServerCommandFactory serverCommandFactory = new ServerCommandFactory();
     
-    private HashMap<Long, Resource> resources = new HashMap();
-    private HashMap<Long, Auction> auctions = new HashMap();
-    private HashMap<Long, User> users = new HashMap();
+    private HashMap<Long, Resource> resources = new HashMap<Long, Resource>();
+    private HashMap<Long, Auction> auctions = new HashMap<Long, Auction>();
+    private HashMap<Long, User> users = new HashMap<Long, User>();
     
     long nextUserId = 0;
     long nextAuctionId = 0;
@@ -28,7 +32,8 @@ public class JAuctionServer {
     
     
     JAuctionServer(){
-    	this.addServerCommands();
+
+    	this.mutationStore = new MutationStore();
     	
     	Resource r1 = addResource("Gold");
     	Resource r2 = addResource("Silver");
@@ -42,48 +47,119 @@ public class JAuctionServer {
     	addAuction( 100, r3, 5000, u2, 100);
     	addAuction( 77, r1, 5000, u1, 34);
     	
-    	this.mutationStore = new MutationStore();
+    }
+    
+    /**
+     * Tries to let user buy auction                           
+     *
+     * @param  user_id Id of the user trying to buy the auction
+     * @param  auction_id Id of the auction to be bought
+     * @return boolean indicating weather buying worked
+     */
+    protected synchronized boolean buyAuction(long user_id, long auction_id){
+    	if(!this.auctions.containsKey(auction_id))
+    	  return false;
+    	if(!this.users.containsKey(user_id))
+      	  return false;
+    	Auction auction = this.auctions.get(auction_id);
+    	User user = this.users.get(user_id);
+    	if(user.getMoney() < auction.getPrice())
+    	  return false;
+    	
+    	user.loseMoney(auction.getPrice());
+    	user.addStock(auction.getResource().getId(), auction.getAmount());
+    	
+    	this.mutationStore.addMutation("auction_sold", auction.soldJson());
+   
+    	this.auctions.remove(auction.getId());
+    	
+    	return true;
     }
     
     
+    /**
+     * Creates new auction and adds it to the list of active auctions. Adds mutation.                       
+     *
+     * @param  amount amount of resource sold in this auction
+     * @param  resource resource that is to be sold
+     * @param duration how long the auction will be running
+     * @param user user that owns this auction
+     * @param price amount of money for which the auction is to be sold
+     * @return Auction Object
+     */
     protected Auction addAuction(int amount, Resource resource, int duration, User user, int price){
     	Auction auc = new Auction(nextAuctionId, amount, resource, duration, user, price);
     	this.auctions.put(nextAuctionId++, auc);
+    	this.mutationStore.addMutation("new_auction", auc.toJson());
     	return auc;
     }
     
+    /**
+     * Creates new resource and adds it to the list of resources.                 
+     *
+     * @param  name Name of resource to be created
+     * @return Resource Object
+     */
     protected Resource addResource(String name){
     	Resource res = new Resource(nextResourceId, name);
     	this.resources.put(nextResourceId++, res);
     	return res;
     }  
     
+    /**
+     * Creates new user and adds it to the list of users.                 
+     *
+     * @param  username Userame of user to be created
+     * @param  password Password of user to be created
+     * @return User Object
+     */
     protected User addUser(String username, String password){
     	User user = new User(nextUserId, username, password);
     	this.users.put(nextUserId++, user);
     	return user;
     }  
 
-    
-    protected HashMap getResources(){
+    /**            
+     *
+     * @return HashMap of all resources.
+     */
+    protected HashMap<Long, Resource> getResources(){
     	return this.resources;
     }
-    
+
+    /**              
+     *
+     * @param resource_id The id of the resource to be returned
+     * @return Resouce Object associated with resource_id 
+     */
     protected Resource getResource(long resource_id){
     	return this.resources.get(resource_id);
     }
     
-    protected HashMap getUsers(){
+    /**               
+     *
+     * @return HashMap of all users.
+     */
+    protected HashMap<Long, User> getUsers(){
     	return this.users;
     }
     
-    protected Hashtable getServerCommands(){
-    	return this.serverCommands;
+    /**
+     * @return Hashtable of all ServerCommands that can be created by ServerCommandFactory
+     */
+    protected Hashtable<String, String> getServerCommands(){
+    	return this.serverCommandFactory.getServerCommands();
     }
     
+    /**
+     * Filters all active auctions by resource_id and returns ArrayList of matches                
+     *
+     * @param  resource_id Id of resource to be filtered by.
+     * @return ArrayList of auctions
+     */
     protected ArrayList<Auction> getAuctionsByResourceId(long resource_id){
-    	ArrayList<Auction> filtered = new ArrayList();
-    	Iterator it = this.auctions.keySet().iterator();
+    	ArrayList<Auction> filtered = new ArrayList<Auction>();
+    	Iterator<Long> it = this.auctions.keySet().iterator();
     	while(it.hasNext()) {
     		Auction auc = this.auctions.get(it.next());
     		if(auc.getResource().getId() == resource_id){
@@ -94,25 +170,13 @@ public class JAuctionServer {
     	return filtered;
     }
     
-    protected HashMap getAuctions(){
+    /**      
+     * @return ArrayList of all active auctions
+     */
+    protected HashMap<Long, Auction> getAuctions(){
     	  return this.auctions;
     }    
     
-    private void addServerCommands(){
-    	serverCommands.put("login", Login.class);
-    	serverCommands.put("get_commands", GetCommands.class);
-    	serverCommands.put("get_money", GetMoney.class);
-    	serverCommands.put("get_stock", GetStock.class);
-    	serverCommands.put("get_stock_all", GetStockAll.class);
-    	serverCommands.put("get_resource", GetResource.class);
-    	serverCommands.put("get_resource_all", GetResourceAll.class);
-    	serverCommands.put("get_auctions", GetAuctions.class);
-    	serverCommands.put("get_auctions_all", GetAuctionsAll.class);
-    	serverCommands.put("create_auction", CreateAuction.class);
-    	serverCommands.put("quit", Quit.class);
-    }
-
-
     
     public static void main(String[] args) throws Exception {
 

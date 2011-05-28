@@ -5,8 +5,8 @@ import java.util.HashMap;
 
 public class User {
   private long id;
-  private int money;
-  private HashMap<Long, Integer> stock = new HashMap<Long, Integer>();
+  private long money;
+  private HashMap<Long, Long> stock = new HashMap<Long, Long>();
   private byte[] auth_key;
   User(long id, String username, String password){
     try {
@@ -21,21 +21,37 @@ public class User {
 	 long r_id1 = (long) 0;
 	 long r_id2 = (long) 1;
 	 long r_id3 = (long) 2;
-	 this.stock.put(r_id1, 150);
-	 this.stock.put(r_id2, 50);
-	 this.stock.put(r_id3, 100);
+	 long v_id1 = (long) 150;
+	 long v_id2 = (long) 50;
+	 long v_id3 = (long) 100;
+	 this.stock.put(r_id1, v_id1);
+	 this.stock.put(r_id2, v_id2);
+	 this.stock.put(r_id3, v_id3);
   }
   
-  public int getMoney(){
+  public long getMoney(){
 	  return this.money;
   }
   
-  public int getStock(long resource_id){
+  public long getStock(long resource_id){
 	  if(this.stock.containsKey(resource_id)){
 		  return this.stock.get(resource_id);
 	  }else{
 		  System.out.println("don't have stock "+resource_id);
 		  return 0;
+	  }
+  }
+  
+  public void loseMoney(long amount){
+	  this.money -= amount;
+  }
+  
+  public void addStock(long res_id, long amount){
+	  if(this.stock.containsKey(res_id)){
+		  long prev_amount = this.stock.get(res_id);
+		  this.stock.put(res_id, prev_amount+amount);
+	  }else{
+		  this.stock.put(res_id, amount);
 	  }
   }
   
