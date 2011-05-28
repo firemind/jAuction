@@ -62,12 +62,14 @@ public class JAuctionServer {
     	if(!this.users.containsKey(user_id))
       	  return false;
     	Auction auction = this.auctions.get(auction_id);
-    	User user = this.users.get(user_id);
-    	if(user.getMoney() < auction.getPrice())
+    	User buyer = this.users.get(user_id);
+    	if(buyer.getMoney() < auction.getPrice())
     	  return false;
     	
-    	user.loseMoney(auction.getPrice());
-    	user.addStock(auction.getResource().getId(), auction.getAmount());
+    	buyer.buyAuction(auction);
+
+    	User seller = auction.getUser();
+    	seller.sellAuction(auction);
     	
     	this.mutationStore.addMutation("auction_sold", auction.soldJson());
    
@@ -78,7 +80,8 @@ public class JAuctionServer {
     
     
     /**
-     * Creates new auction and adds it to the list of active auctions. Adds mutation.                       
+     * Creates new auction and adds it to the list of active auctions. Adds mutation. 
+     * Takes stock from user who created auction and adds auction to that users auctions.
      *
      * @param  amount amount of resource sold in this auction
      * @param  resource resource that is to be sold
@@ -88,14 +91,16 @@ public class JAuctionServer {
      * @return Auction Object
      */
     protected Auction addAuction(int amount, Resource resource, int duration, User user, int price){
+
     	Auction auc = new Auction(nextAuctionId, amount, resource, duration, user, price);
     	this.auctions.put(nextAuctionId++, auc);
+    	user.createAuction(auc);
     	this.mutationStore.addMutation("new_auction", auc.toJson());
     	return auc;
     }
     
     /**
-     * Creates new resource and adds it to the list of resources.                 
+     * Creates new resource and adds it to the list of resources.            
      *
      * @param  name Name of resource to be created
      * @return Resource Object

@@ -7,9 +7,12 @@ public class User {
   private long id;
   private long money;
   private HashMap<Long, Long> stock = new HashMap<Long, Long>();
+  private HashMap<Long, Auction> auctions = new HashMap<Long, Auction>();
   private byte[] auth_key;
   private String username;
   private String password;
+  protected Connection con;
+  
   
   User(long id, String username, String password){
     try {
@@ -47,16 +50,32 @@ public class User {
 	  }
   }
   
+  public void addMoney(long amount){
+	  this.money += amount;
+  }
+  
   public void loseMoney(long amount){
 	  this.money -= amount;
   }
-  
+
   public void addStock(long res_id, long amount){
 	  if(this.stock.containsKey(res_id)){
 		  long prev_amount = this.stock.get(res_id);
 		  this.stock.put(res_id, prev_amount+amount);
 	  }else{
 		  this.stock.put(res_id, amount);
+	  }
+  }
+  
+  public void loseStock(long res_id, long amount){
+	  if(this.stock.containsKey(res_id)){
+		  long prev_amount = this.stock.get(res_id);
+		  this.stock.put(res_id, prev_amount-amount);
+	  }else{
+		  this.stock.put(res_id, (long) -amount);
+	  }
+	  if(this.stock.get(res_id) < 0){
+	    System.out.println("user lost more stock than he has");
 	  }
   }
   
@@ -67,6 +86,30 @@ public class User {
 		  return false;
 	  }
 	  
+  }
+  
+  public void createAuction(Auction auc){
+  	addAuction(auc);
+	loseStock(auc.getResource().getId(), auc.getAmount());
+  }
+  
+  public void buyAuction(Auction auc){
+  	this.loseMoney(auc.getPrice());
+	this.addStock(auc.getResource().getId(), auc.getAmount());
+  }
+  
+  
+  public void sellAuction(Auction auc){
+  	addMoney(auc.getPrice());
+	removeAuction(auc);
+  }
+  
+  public void addAuction(Auction auc){
+	  this.auctions.put(auc.getId(), auc);
+  }
+  
+  public void removeAuction(Auction auc){
+	  this.auctions.remove(auc.getId());
   }
   
   public String getAuthKey(){
