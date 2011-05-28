@@ -208,7 +208,7 @@ public class JAuctionServerTest extends TestCase {
 			  json = json.getJSONObject("data");
 			  assertTrue(json.containsKey("auctions"));
 			  JSONArray auctions = json.getJSONArray("auctions");
-			  assertTrue(auctions.size() == 2);
+			  assertTrue(auctions.size() > 0);
 			  for( int i = 0; i < auctions.size(); i++){
 				  json = auctions.getJSONObject(i);
 				  assertTrue(json.containsKey("resource_id"));

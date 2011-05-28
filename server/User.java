@@ -8,6 +8,9 @@ public class User {
   private long money;
   private HashMap<Long, Long> stock = new HashMap<Long, Long>();
   private byte[] auth_key;
+  private String username;
+  private String password;
+  
   User(long id, String username, String password){
     try {
 	  MessageDigest digest = java.security.MessageDigest.getInstance("MD5");
@@ -16,6 +19,8 @@ public class User {
 	 }catch(NoSuchAlgorithmException e){
        System.out.println("No Such Algorithm");
   	 }
+	 this.username = username;
+	 this.password = password;
 	 this.id = id;
 	 this.money = 5000;
 	 long r_id1 = (long) 0;
@@ -53,6 +58,15 @@ public class User {
 	  }else{
 		  this.stock.put(res_id, amount);
 	  }
+  }
+  
+  public boolean authenticate(String u, String p){
+	  if(u.equals(this.username) && p.equals(this.password)){
+		  return true;
+	  }else{
+		  return false;
+	  }
+	  
   }
   
   public String getAuthKey(){

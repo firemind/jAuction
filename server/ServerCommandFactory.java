@@ -11,6 +11,7 @@ public class ServerCommandFactory {
     
     public ServerCommandFactory(){
     	serverCommands.put("login", "Login");
+    	serverCommands.put("signup", "Signup");
     	serverCommands.put("get_commands", "GetCommands");
     	serverCommands.put("get_money", "GetMoney");
     	serverCommands.put("get_stock", "GetStock");
@@ -20,6 +21,7 @@ public class ServerCommandFactory {
     	serverCommands.put("get_auctions", "GetAuctions");
     	serverCommands.put("get_auctions_all", "GetAuctionsAll");
     	serverCommands.put("create_auction", "CreateAuction");
+    	serverCommands.put("buy_auction", "BuyAuction");
     	serverCommands.put("quit", "Quit");
     }
 	protected ServerCommand getCommand(String name, Connection con){

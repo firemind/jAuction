@@ -24,6 +24,9 @@ public class Connection implements Runnable, Observer {
       this.out = new Out(clientSocket);
     }
 
+    /** 
+     * Searches for new Mutations and sends them through the socket
+     */
     public void update(Observable obs, Object obj){
     	MutationStore mutSto = (MutationStore) obs;
     	for (MutationStore.Mutation m : mutSto.getMutations(last_mutation)){

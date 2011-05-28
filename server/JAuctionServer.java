@@ -119,6 +119,26 @@ public class JAuctionServer {
     	return user;
     }  
 
+    /**
+     * Authenticates User by username and password            
+     *
+     * @param  username Userame of user to be authenticated
+     * @param  password Password of user to be authenticated
+     * @return User Object or null
+     */
+    protected User authenticateUser(String username, String password){
+    	User user = null;
+    	Iterator<Long> it = this.users.keySet().iterator();
+    	while(it.hasNext()) {
+    		User tmp_user = this.users.get(it.next());
+    		if(tmp_user.authenticate(username, password)){
+    			user = tmp_user;
+    		}
+    	}
+    	return user;
+    }  
+    
+    
     /**            
      *
      * @return HashMap of all resources.

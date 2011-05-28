@@ -23,12 +23,12 @@ public class Signup extends ServerCommand {
 	
 	public JSONObject responseSpecification(){
 		HashMap data = new HashMap();
-		data.put("auth_key", "String");
+		data.put("success", "Boolean");
 		return super.specificationMapper("response", data);
 	}
 	
 	public String name(){
-		return "login";
+		return "signup";
 	}
 	
 	public boolean parseJson(JSONObject data){
@@ -43,9 +43,13 @@ public class Signup extends ServerCommand {
 	}
 	
 	public void run(){
-		this.con.user = con.jAuctionServer.addUser(username, password);
+		User u = con.jAuctionServer.addUser(username, password);
 		HashMap data = new HashMap();
-		data.put("auth_key", con.user.getAuthKey());
+		if(u != null){
+			  data.put("success", true);
+		}else{
+			  data.put("success", false);
+		}
 		con.respond(responseName(), data);
 	}
 }
