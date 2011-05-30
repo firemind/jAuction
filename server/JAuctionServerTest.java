@@ -129,7 +129,7 @@ public class JAuctionServerTest extends TestCase {
 			  json = json.getJSONObject("data");
 			  assertTrue(json.containsKey("amount"));
 			  int amount = json.getInt("amount");
-			  assertEquals(amount, 50);
+			  assertEquals(45,amount);
 		  }catch(net.sf.json.JSONException e){
 			  e.printStackTrace();
 			  fail("Invalid JSON");

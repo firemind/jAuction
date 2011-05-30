@@ -140,5 +140,12 @@ public class Connection implements Runnable, Observer {
 		send(jsonObject);
     }
     
+	public void respond(String command, JSONObject data){
+		Map response = new HashMap();
+		response.put("command", command);
+		JSONObject jsonObject = JSONObject.fromObject( response );
+		jsonObject.put("data", data);
+		send(jsonObject);
+    }
 
 }

@@ -29,7 +29,7 @@ public class Quit extends ServerCommand {
 	
 	public void run(){
   		HashMap data = new HashMap(); 
-  		con.respond("quit", null);
+  		con.respond("quit", (HashMap) null);
 		con.close();
 	}
 }

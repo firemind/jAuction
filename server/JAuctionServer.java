@@ -71,8 +71,31 @@ public class JAuctionServer {
     	User seller = auction.getUser();
     	seller.sellAuction(auction);
     	
-    	this.mutationStore.addMutation("auction_sold", auction.soldJson());
-   
+    	this.mutationStore.addMutation("auction_remove", auction.removeJson());
+    	auction.getUser().send("auction_sold", auction.soldJson());
+    	this.auctions.remove(auction.getId());
+    	
+    	return true;
+    }
+
+    /**
+     * Tries to cancel the auction                           
+     *
+     * @param  user_id Id of the user trying to buy the auction
+     * @param  auction_id Id of the auction to be bought
+     * @return boolean indicating weather buying worked
+     */
+    protected synchronized boolean cancelAuction(long auction_id){
+    	if(!this.auctions.containsKey(auction_id))
+    	  return false;
+    	Auction auction = this.auctions.get(auction_id);
+
+    	
+    	User seller = auction.getUser();
+    	seller.sellAuction(auction);
+    	seller.addStock(auction.getResource().getId(), auction.getAmount());
+    	
+    	this.mutationStore.addMutation("auction_removed", auction.removeJson());
     	this.auctions.remove(auction.getId());
     	
     	return true;

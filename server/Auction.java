@@ -55,6 +55,13 @@ public class Auction {
 		JSONObject jsonObject = JSONObject.fromObject( data );
 		return jsonObject;
 	  }
+
+  public JSONObject removeJson(){
+	  	HashMap data = new HashMap();
+		data.put("auction_id", this.id);
+		JSONObject jsonObject = JSONObject.fromObject( data );
+		return jsonObject;
+	  } 
   
   public JSONObject toJson(){
   	HashMap data = new HashMap();

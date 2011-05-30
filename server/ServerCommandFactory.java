@@ -22,6 +22,7 @@ public class ServerCommandFactory {
     	serverCommands.put("get_auctions_all", "GetAuctionsAll");
     	serverCommands.put("create_auction", "CreateAuction");
     	serverCommands.put("buy_auction", "BuyAuction");
+    	serverCommands.put("cancel_auction", "CancelAuction");
     	serverCommands.put("quit", "Quit");
     }
 	protected ServerCommand getCommand(String name, Connection con){

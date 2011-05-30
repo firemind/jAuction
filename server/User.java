@@ -3,6 +3,8 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 
+import net.sf.json.JSONObject;
+
 public class User {
   private long id;
   private long money;
@@ -118,5 +120,11 @@ public class User {
 
   public long getId(){
 	  return this.id;
+  }
+  
+  public void send(String command, JSONObject data){
+	  if(this.con != null){
+		  this.con.send(data);
+	  }
   }
 }
