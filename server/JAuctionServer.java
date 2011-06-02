@@ -42,10 +42,10 @@ public class JAuctionServer {
     	User u1 = addUser("mark", "secret");
     	User u2 = addUser("jeff", "ladybug");
 
-    	addAuction( 5, r2, 5000, u1, 92);
+    	addAuction( 5, r2, 3000, u1, 92);
     	addAuction( 20, r3, 5000, u2, 55);
-    	addAuction( 100, r3, 5000, u2, 100);
-    	addAuction( 77, r1, 5000, u1, 34);
+    	addAuction( 100, r3, 7000, u2, 100);
+    	addAuction( 77, r1, 10000, u1, 34);
     	
     }
     
@@ -115,7 +115,7 @@ public class JAuctionServer {
      */
     protected Auction addAuction(int amount, Resource resource, int duration, User user, int price){
 
-    	Auction auc = new Auction(nextAuctionId, amount, resource, duration, user, price);
+    	Auction auc = new Auction(this, nextAuctionId, amount, resource, duration, user, price);
     	this.auctions.put(nextAuctionId++, auc);
     	user.createAuction(auc);
     	this.mutationStore.addMutation("new_auction", auc.toJson());
