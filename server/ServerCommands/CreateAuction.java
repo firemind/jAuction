@@ -1,7 +1,12 @@
-package server;
+package server.ServerCommands;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+
+import server.Auction;
+import server.Connection;
+import server.Resource;
+import server.User;
 
 import net.sf.json.JSONObject;
 

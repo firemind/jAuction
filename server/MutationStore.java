@@ -10,16 +10,16 @@ import net.sf.json.JSONObject;
 public class MutationStore extends Observable{
 
 	private ArrayList<Mutation> mutations = new ArrayList();
-	private int last = 0;		// Index of last element
+	private int next = 0;		// Index of last element
 	private long id_counter = 0;
 	private static int maxMutations = 2000;  // Number after which Ringpuffer resets
 	
    protected void addMutation(String name, JSONObject data){
 	   Mutation mutation = new Mutation(name, data, id_counter++);
 	   if(mutations.size() == maxMutations){
-		   last = 0; 
+		   next = 0; 
 	   }
-	   mutations.add(last++, mutation);
+	   mutations.add(next++, mutation);
 	   setChanged();
 	   notifyObservers();
    }
@@ -36,8 +36,8 @@ public class MutationStore extends Observable{
 	   int offset = (int) (id_counter - last_mutation);
 	   ArrayList<Mutation> returnMutations = new ArrayList();
 	   if(offset > 0){
-		   int start = last - offset;
-		   while(start <= last){
+		   int start = next - offset;
+		   while(start < (next-1)){
 			   returnMutations.add(mutations.get(getTrueIndex(++start)));
 		   }
 	   }

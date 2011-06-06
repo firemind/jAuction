@@ -1,8 +1,11 @@
-package server;
+package server.ServerCommands;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+
+import server.Connection;
+import server.Resource;
 
 import net.sf.json.JSONObject;
 

@@ -1,6 +1,8 @@
-package server;
+package server.ServerCommands;
 
 import java.util.HashMap;
+
+import server.Connection;
 
 import net.sf.json.JSONObject;
 

@@ -1,7 +1,9 @@
-package server;
+package server.ServerCommands;
 
 import java.io.IOException;
 import java.util.HashMap;
+
+import server.Connection;
 
 import net.sf.json.JSONObject;
 
@@ -29,7 +31,7 @@ public class Quit extends ServerCommand {
 	
 	public void run(){
   		HashMap data = new HashMap(); 
-  		con.respond("quit", null);
+  		con.respond("quit", (HashMap) null);
 		con.close();
 	}
 }

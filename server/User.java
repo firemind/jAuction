@@ -3,11 +3,19 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 
+import net.sf.json.JSONObject;
+
 public class User {
   private long id;
-  private int money;
-  private HashMap<Long, Integer> stock = new HashMap<Long, Integer>();
+  private long money;
+  private HashMap<Long, Long> stock = new HashMap<Long, Long>();
+  private HashMap<Long, Auction> auctions = new HashMap<Long, Auction>();
   private byte[] auth_key;
+  private String username;
+  private String password;
+  public Connection con;
+  
+  
   User(long id, String username, String password){
     try {
 	  MessageDigest digest = java.security.MessageDigest.getInstance("MD5");
@@ -16,21 +24,26 @@ public class User {
 	 }catch(NoSuchAlgorithmException e){
        System.out.println("No Such Algorithm");
   	 }
+	 this.username = username;
+	 this.password = password;
 	 this.id = id;
 	 this.money = 5000;
 	 long r_id1 = (long) 0;
 	 long r_id2 = (long) 1;
 	 long r_id3 = (long) 2;
-	 this.stock.put(r_id1, 150);
-	 this.stock.put(r_id2, 50);
-	 this.stock.put(r_id3, 100);
+	 long v_id1 = (long) 150;
+	 long v_id2 = (long) 50;
+	 long v_id3 = (long) 100;
+	 this.stock.put(r_id1, v_id1);
+	 this.stock.put(r_id2, v_id2);
+	 this.stock.put(r_id3, v_id3);
   }
   
-  public int getMoney(){
+  public long getMoney(){
 	  return this.money;
   }
   
-  public int getStock(long resource_id){
+  public long getStock(long resource_id){
 	  if(this.stock.containsKey(resource_id)){
 		  return this.stock.get(resource_id);
 	  }else{
@@ -39,11 +52,79 @@ public class User {
 	  }
   }
   
+  public void addMoney(long amount){
+	  this.money += amount;
+  }
+  
+  public void loseMoney(long amount){
+	  this.money -= amount;
+  }
+
+  public void addStock(long res_id, long amount){
+	  if(this.stock.containsKey(res_id)){
+		  long prev_amount = this.stock.get(res_id);
+		  this.stock.put(res_id, prev_amount+amount);
+	  }else{
+		  this.stock.put(res_id, amount);
+	  }
+  }
+  
+  public void loseStock(long res_id, long amount){
+	  if(this.stock.containsKey(res_id)){
+		  long prev_amount = this.stock.get(res_id);
+		  this.stock.put(res_id, prev_amount-amount);
+	  }else{
+		  this.stock.put(res_id, (long) -amount);
+	  }
+	  if(this.stock.get(res_id) < 0){
+	    System.out.println("user lost more stock than he has");
+	  }
+  }
+  
+  public boolean authenticate(String u, String p){
+	  if(u.equals(this.username) && p.equals(this.password)){
+		  return true;
+	  }else{
+		  return false;
+	  }
+	  
+  }
+  
+  public void createAuction(Auction auc){
+  	addAuction(auc);
+	loseStock(auc.getResource().getId(), auc.getAmount());
+  }
+  
+  public void buyAuction(Auction auc){
+  	this.loseMoney(auc.getPrice());
+	this.addStock(auc.getResource().getId(), auc.getAmount());
+  }
+  
+  
+  public void sellAuction(Auction auc){
+  	addMoney(auc.getPrice());
+	removeAuction(auc);
+  }
+  
+  public void addAuction(Auction auc){
+	  this.auctions.put(auc.getId(), auc);
+  }
+  
+  public void removeAuction(Auction auc){
+	  this.auctions.remove(auc.getId());
+  }
+  
   public String getAuthKey(){
 	  return this.auth_key.toString();
   }
 
   public long getId(){
 	  return this.id;
+  }
+  
+  public void send(String command, JSONObject data){
+	  if(this.con != null){
+		  this.con.send(data);
+	  }
   }
 }
