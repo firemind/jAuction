@@ -1,5 +1,5 @@
 import java.util.*;
-//import gson;
+import com.google.gson.*;
 
 class Model extends Observable {
   private Connection _connection;
@@ -9,6 +9,7 @@ class Model extends Observable {
   }
 
   public void extractJson(String json) {
+	  
   }
 
   public void setConnection(Connection connection) {
