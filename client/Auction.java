@@ -1,8 +1,6 @@
-package jAuction.models;
-
 import java.util.*;
 
-class Auction extends Observable {
+class Auction {
   private static HashMap<Integer, Auction> _all = new HashMap();
   private int _id;
   private int _user_id;
@@ -12,12 +10,12 @@ class Auction extends Observable {
   private int _timeleft_sec;
 
   private Auction(int id, int user_id, int amount, int resource_id, double price, int timeleft_sec) {
-    this._id = id;
-    this._user_id = user_id;
-    this._amount = amount;
-    this._resource_id = resource_id;
-    this._price = price;
-    this._timeleft_sec = timeleft_sec;
+	_id = id;
+	_user_id = user_id;
+	_amount = amount;
+	_resource_id = resource_id;
+	_price = price;
+	_timeleft_sec = timeleft_sec;
   }
   
   public static void add(int id, int user_id, int amount, int resource_id, double price, int timeleft_sec) {
@@ -25,7 +23,7 @@ class Auction extends Observable {
     gAll().put(auction.gId(), auction);
   }
 
-  public static HashMap gAll()
+  public static HashMap<Integer, Auction> gAll()
   { return _all; }
 
   public int gId()

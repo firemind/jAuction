@@ -1,8 +1,6 @@
-package jAuction.models;
-
 import java.util.*;
 
-class Stock extends Observable {
+class Stock {
   private static HashMap<Integer, Stock> _all = new HashMap();
   private int _id;
   private int _amount;
@@ -19,7 +17,7 @@ class Stock extends Observable {
     gAll().put(stock.gId(), stock);
   }
 
-  public static HashMap gAll()
+  public static HashMap<Integer, Stock> gAll()
   { return _all; }
 
   public int gId()
