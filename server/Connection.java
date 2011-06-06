@@ -2,6 +2,7 @@ package server;
 import java.net.Socket;
 import java.io.*;
 
+import server.ServerCommands.*;
 import net.sf.json.JSONObject;
 import net.sf.json.JSONSerializer;
 import java.util.HashMap;
@@ -13,8 +14,8 @@ public class Connection implements Runnable, Observer {
     protected Socket server;
     public In in;
     public Out out;
-    protected User user;
-    protected JAuctionServer jAuctionServer;
+    public User user;
+    public JAuctionServer jAuctionServer;
     private long last_mutation = 0;
     
     Connection(Socket clientSocket, JAuctionServer jAuctionServer) {

@@ -13,7 +13,7 @@ public class User {
   private byte[] auth_key;
   private String username;
   private String password;
-  protected Connection con;
+  public Connection con;
   
   
   User(long id, String username, String password){

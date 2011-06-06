@@ -15,12 +15,14 @@ import java.util.Hashtable;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import server.ServerCommands.ServerCommandFactory;
+
 public class JAuctionServer {
     private static int port = 4444;
     private static int maxConnections = 0;
 
     private MutationStore mutationStore;
-    protected ServerCommandFactory serverCommandFactory = new ServerCommandFactory();
+    public ServerCommandFactory serverCommandFactory = new ServerCommandFactory();
     
     private HashMap<Long, Resource> resources = new HashMap<Long, Resource>();
     private HashMap<Long, Auction> auctions = new HashMap<Long, Auction>();
@@ -56,7 +58,7 @@ public class JAuctionServer {
      * @param  auction_id Id of the auction to be bought
      * @return boolean indicating weather buying worked
      */
-    protected synchronized boolean buyAuction(long user_id, long auction_id){
+    public synchronized boolean buyAuction(long user_id, long auction_id){
     	if(!this.auctions.containsKey(auction_id))
     	  return false;
     	if(!this.users.containsKey(user_id))
@@ -85,7 +87,7 @@ public class JAuctionServer {
      * @param  auction_id Id of the auction to be bought
      * @return boolean indicating weather buying worked
      */
-    protected synchronized boolean cancelAuction(long auction_id){
+    public synchronized boolean cancelAuction(long auction_id){
     	if(!this.auctions.containsKey(auction_id))
     	  return false;
     	Auction auction = this.auctions.get(auction_id);
@@ -113,7 +115,7 @@ public class JAuctionServer {
      * @param price amount of money for which the auction is to be sold
      * @return Auction Object
      */
-    protected Auction addAuction(int amount, Resource resource, int duration, User user, int price){
+    public Auction addAuction(int amount, Resource resource, int duration, User user, int price){
 
     	Auction auc = new Auction(this, nextAuctionId, amount, resource, duration, user, price);
     	this.auctions.put(nextAuctionId++, auc);
@@ -128,7 +130,7 @@ public class JAuctionServer {
      * @param  name Name of resource to be created
      * @return Resource Object
      */
-    protected Resource addResource(String name){
+    public Resource addResource(String name){
     	Resource res = new Resource(nextResourceId, name);
     	this.resources.put(nextResourceId++, res);
     	return res;
@@ -141,7 +143,7 @@ public class JAuctionServer {
      * @param  password Password of user to be created
      * @return User Object
      */
-    protected User addUser(String username, String password){
+    public User addUser(String username, String password){
     	User user = new User(nextUserId, username, password);
     	this.users.put(nextUserId++, user);
     	return user;
@@ -154,7 +156,7 @@ public class JAuctionServer {
      * @param  password Password of user to be authenticated
      * @return User Object or null
      */
-    protected User authenticateUser(String username, String password){
+    public User authenticateUser(String username, String password){
     	User user = null;
     	Iterator<Long> it = this.users.keySet().iterator();
     	while(it.hasNext()) {
@@ -171,7 +173,7 @@ public class JAuctionServer {
      *
      * @return HashMap of all resources.
      */
-    protected HashMap<Long, Resource> getResources(){
+    public HashMap<Long, Resource> getResources(){
     	return this.resources;
     }
 
@@ -180,7 +182,7 @@ public class JAuctionServer {
      * @param resource_id The id of the resource to be returned
      * @return Resouce Object associated with resource_id 
      */
-    protected Resource getResource(long resource_id){
+    public Resource getResource(long resource_id){
     	return this.resources.get(resource_id);
     }
     
@@ -188,14 +190,14 @@ public class JAuctionServer {
      *
      * @return HashMap of all users.
      */
-    protected HashMap<Long, User> getUsers(){
+    public HashMap<Long, User> getUsers(){
     	return this.users;
     }
     
     /**
      * @return Hashtable of all ServerCommands that can be created by ServerCommandFactory
      */
-    protected Hashtable<String, String> getServerCommands(){
+    public Hashtable<String, String> getServerCommands(){
     	return this.serverCommandFactory.getServerCommands();
     }
     
@@ -205,7 +207,7 @@ public class JAuctionServer {
      * @param  resource_id Id of resource to be filtered by.
      * @return ArrayList of auctions
      */
-    protected ArrayList<Auction> getAuctionsByResourceId(long resource_id){
+    public ArrayList<Auction> getAuctionsByResourceId(long resource_id){
     	ArrayList<Auction> filtered = new ArrayList<Auction>();
     	Iterator<Long> it = this.auctions.keySet().iterator();
     	while(it.hasNext()) {
@@ -221,7 +223,7 @@ public class JAuctionServer {
     /**      
      * @return ArrayList of all active auctions
      */
-    protected HashMap<Long, Auction> getAuctions(){
+    public HashMap<Long, Auction> getAuctions(){
     	  return this.auctions;
     }    
     
