@@ -1,7 +1,7 @@
 import java.util.*;
 
 class User {
-  private static HashMap<Integer, User> _all = new HashMap();
+  private static HashMap<Integer, User> _all = new HashMap<Integer, User>();
   private int _id;
   private String _name;
 

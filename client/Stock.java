@@ -1,7 +1,7 @@
 import java.util.*;
 
 class Stock {
-  private static HashMap<Integer, Stock> _all = new HashMap();
+  private static HashMap<Integer, Stock> _all = new HashMap<Integer, Stock>();
   private int _id;
   private int _amount;
   private int _resource_id;

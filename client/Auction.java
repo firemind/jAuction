@@ -1,7 +1,7 @@
 import java.util.*;
 
 class Auction {
-  private static HashMap<Integer, Auction> _all = new HashMap();
+  private static HashMap<Integer, Auction> _all = new HashMap<Integer, Auction>();
   private int _id;
   private int _user_id;
   private int _amount;

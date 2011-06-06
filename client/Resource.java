@@ -1,7 +1,7 @@
 import java.util.*;
 
 class Resource {
-  private static HashMap<Integer, Resource> _all = new HashMap();
+  private static HashMap<Integer, Resource> _all = new HashMap<Integer, Resource>();
   private int _id;
   private String _name;
 
