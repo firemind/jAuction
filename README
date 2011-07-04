@@ -1,0 +1,17 @@
+== jAuctionServer ==
+
+Documentation: https://github.com/servasat/jAuction/wiki/JAuction-Server
+
+Required libs for jAuctionServer:
+* commons-io
+* commons-lang
+* commons-logging
+* commons-collections3
+* commons-beanutils
+* libjson
+* ezmorph
+
+Add them to the buildpath in eclipse.
+
+Or just run the jar with 
+ java -jar jAuctionServer.jar
