@@ -39,6 +39,26 @@ public class JAuctionServerTest extends TestCase {
 		
 	}
 	
+	public void testSignup(){
+        printWriter.println("{command:'signup', data: {username: 'mark', password: 'secret'}}");
+        printWriter.flush();
+        In in = new In (socket);
+		try {
+			  JSONObject json = (JSONObject) JSONSerializer.toJSON(readResponse(in));
+			  assertTrue(json.containsKey("data"));
+			  json = json.getJSONObject("data");
+			  assertTrue(json.containsKey("success"));
+			  Boolean success = json.getBoolean("success");
+			  assertTrue(success);
+		  }catch(net.sf.json.JSONException e){
+			  e.printStackTrace();
+			  fail("Invalid JSON");
+		  }
+		in.close();
+		sendQuit();
+	}
+	
+	
 	public boolean jsonParse(String jsonString){
 		  try {
 			  JSONObject json = (JSONObject) JSONSerializer.toJSON(jsonString);
@@ -50,6 +70,23 @@ public class JAuctionServerTest extends TestCase {
 			  fail("Invalid JSON");
 			  return false;
 		  }
+	}
+	
+	public String login(In in){
+        printWriter.println("{command:'login', data: {username: 'mark', password: 'secret'}}");
+        printWriter.flush();
+        String auth_key = null;
+		try {
+			  JSONObject json = (JSONObject) JSONSerializer.toJSON(readResponse(in));
+			  assertTrue(json.containsKey("data"));
+			  json = json.getJSONObject("data");
+			  assertTrue(json.containsKey("auth_key"));
+			  auth_key = json.getString("auth_key");
+		}catch(net.sf.json.JSONException e){
+			  e.printStackTrace();
+			  fail("Invalid JSON by get_commands");
+		}
+		return auth_key;
 	}
 	
 	public void testGetCommands() {
@@ -79,19 +116,11 @@ public class JAuctionServerTest extends TestCase {
 	}
 
 	public void testLoginAndGetMoney(){
-        printWriter.println("{command:'login', data: {username: 'mark', password: 'secret'}}");
-        printWriter.flush();
         In in = new In (socket);
-		try {
-			  JSONObject json = (JSONObject) JSONSerializer.toJSON(readResponse(in));
-			  assertTrue(json.containsKey("data"));
-			  json = json.getJSONObject("data");
-			  assertTrue(json.containsKey("auth_key"));
-			  String auth_key = json.getString("auth_key");
-		
-			  printWriter.println("{command:'get_money', data: {auth_key: '"+auth_key+"'}}");
+		try{
+			  printWriter.println("{command:'get_money', data: {auth_key: '"+login(in)+"'}}");
 		      printWriter.flush();
-		      json = (JSONObject) JSONSerializer.toJSON(readResponse(in));
+			  JSONObject json = (JSONObject) JSONSerializer.toJSON(readResponse(in));
 			  assertTrue(json.containsKey("data"));
 			  json = json.getJSONObject("data");
 			  assertTrue(json.containsKey("money"));
@@ -107,23 +136,15 @@ public class JAuctionServerTest extends TestCase {
 
 
 	public void testLoginAndGetStock(){
-        sendJson("{command:'login', data: {username: 'mark', password: 'secret'}}");
         In in = new In (socket);
-		try {
-			  JSONObject json = (JSONObject) JSONSerializer.toJSON(readResponse(in));
-			  assertTrue(json.containsKey("data"));
-			  json = json.getJSONObject("data");
-			  assertTrue(json.containsKey("auth_key"));
-			  String auth_key = json.getString("auth_key");
-			  
-			  
-			  sendJson("{command:'get_stock', data: {resource_id: 1, auth_key: '"+auth_key+"'}}");
-		      json = (JSONObject) JSONSerializer.toJSON(readResponse(in));
+		try{  
+			  sendJson("{command:'get_stock', data: {resource_id: 1, auth_key: '"+login(in)+"'}}");
+		      JSONObject json = (JSONObject) JSONSerializer.toJSON(readResponse(in));
 			  assertTrue(json.containsKey("data"));
 			  json = json.getJSONObject("data");
 			  assertTrue(json.containsKey("amount"));
 			  int amount = json.getInt("amount");
-			  assertEquals(45,amount);
+			  assertEquals(50,amount);
 		  }catch(net.sf.json.JSONException e){
 			  e.printStackTrace();
 			  fail("Invalid JSON");
@@ -133,18 +154,11 @@ public class JAuctionServerTest extends TestCase {
 	}	
 
 	public void testLoginAndGetStockAll(){
-        sendJson("{command:'login', data: {username: 'mark', password: 'secret'}}");
         In in = new In (socket);
-		try {
-			  JSONObject json = (JSONObject) JSONSerializer.toJSON(readResponse(in));
-			  assertTrue(json.containsKey("data"));
-			  json = json.getJSONObject("data");
-			  assertTrue(json.containsKey("auth_key"));
-			  String auth_key = json.getString("auth_key");
-			  
-			  
-			  sendJson("{command:'get_stock_all', data: {auth_key: '"+auth_key+"'}}");
-		      json = (JSONObject) JSONSerializer.toJSON(readResponse(in));
+		try{
+			 		  
+			  sendJson("{command:'get_stock_all', data: {auth_key: '"+login(in)+"'}}");
+		      JSONObject json = (JSONObject) JSONSerializer.toJSON(readResponse(in));
 			  assertTrue(json.containsKey("data"));
 			  json = json.getJSONObject("data");
 			  JSONArray stocks = json.getJSONArray("stocks");
@@ -202,7 +216,7 @@ public class JAuctionServerTest extends TestCase {
 			  json = json.getJSONObject("data");
 			  assertTrue(json.containsKey("auctions"));
 			  JSONArray auctions = json.getJSONArray("auctions");
-			  assertTrue(auctions.size() > 0);
+			  assertTrue(auctions.size() >= 0);
 			  for( int i = 0; i < auctions.size(); i++){
 				  json = auctions.getJSONObject(i);
 				  assertTrue(json.containsKey("resource_id"));
@@ -235,7 +249,7 @@ public class JAuctionServerTest extends TestCase {
 			  json = json.getJSONObject("data");
 			  assertTrue(json.containsKey("auctions"));
 			  JSONArray auctions = json.getJSONArray("auctions");
-			  assertTrue(auctions.size() > 0);
+			  assertTrue(auctions.size() >= 0);
 			  for( int i = 0; i < auctions.size(); i++){
 				  json = auctions.getJSONObject(i);
 				  assertTrue(json.containsKey("resource_id"));
@@ -257,17 +271,11 @@ public class JAuctionServerTest extends TestCase {
 	
 	public void testLoginAndCreateAuction() {
 
-		sendJson("{command:'login', data: {username: 'mark', password: 'secret'}}");
         In in = new In (socket);
-		try {
-			  JSONObject json = (JSONObject) JSONSerializer.toJSON(readResponse(in));
-			  assertTrue(json.containsKey("data"));
-			  json = json.getJSONObject("data");
-			  assertTrue(json.containsKey("auth_key"));
-			  String auth_key = json.getString("auth_key");
+		try{
 			  
-		      sendJson("{command:'create_auction', data:{resource_id : 2,amount: 10,price: 89,duration: 80000,auth_key: '"+auth_key+"'}}");
-		      json = (JSONObject) JSONSerializer.toJSON(readResponse(in));
+		      sendJson("{command:'create_auction', data:{resource_id : 2,amount: 10,price: 89,duration: 80000,auth_key: '"+login(in)+"'}}");
+		      JSONObject json = (JSONObject) JSONSerializer.toJSON(readResponse(in));
 			  assertTrue(json.containsKey("data"));
 			  json = json.getJSONObject("data");
 			  assertTrue(json.containsKey("auction_id"));
