@@ -1,6 +1,5 @@
 package server.ServerCommands;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 import server.Auction;

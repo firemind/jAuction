@@ -28,12 +28,12 @@ public class User {
 	 this.password = password;
 	 this.id = id;
 	 this.money = 5000;
-	 long r_id1 = (long) 0;
-	 long r_id2 = (long) 1;
-	 long r_id3 = (long) 2;
-	 long v_id1 = (long) 150;
-	 long v_id2 = (long) 50;
-	 long v_id3 = (long) 100;
+	 long r_id1 = 0;
+	 long r_id2 = 1;
+	 long r_id3 = 2;
+	 long v_id1 = 150;
+	 long v_id2 = 50;
+	 long v_id3 = 100;
 	 this.stock.put(r_id1, v_id1);
 	 this.stock.put(r_id2, v_id2);
 	 this.stock.put(r_id3, v_id3);
@@ -74,7 +74,7 @@ public class User {
 		  long prev_amount = this.stock.get(res_id);
 		  this.stock.put(res_id, prev_amount-amount);
 	  }else{
-		  this.stock.put(res_id, (long) -amount);
+		  this.stock.put(res_id, -amount);
 	  }
 	  if(this.stock.get(res_id) < 0){
 	    System.out.println("user lost more stock than he has");

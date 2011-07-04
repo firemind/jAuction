@@ -32,7 +32,7 @@ public class ServerCommandFactory {
 		ServerCommand sc = null;
 		try {
 		  if(serverCommands.containsKey(name)){
-			  Class cla = (Class) Class.forName("server.ServerCommands."+serverCommands.get(name));
+			  Class cla = Class.forName("server.ServerCommands."+serverCommands.get(name));
 				try {
 					sc = (ServerCommand) cla.getDeclaredConstructor(con.getClass()).newInstance(con);
 				}catch(Exception e){

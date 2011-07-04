@@ -40,7 +40,7 @@ public class JAuctionServer {
     	Resource r1 = addResource("Gold");
     	Resource r2 = addResource("Silver");
     	Resource r3 = addResource("Iron");
-
+/*
     	User u1 = addUser("mark", "secret");
     	User u2 = addUser("jeff", "ladybug");
 
@@ -48,7 +48,7 @@ public class JAuctionServer {
     	addAuction( 20, r3, 5000, u2, 55);
     	addAuction( 100, r3, 7000, u2, 100);
     	addAuction( 77, r1, 10000, u1, 34);
-    	
+ */   	
     }
     
     /**

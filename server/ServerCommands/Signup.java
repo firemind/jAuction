@@ -6,7 +6,6 @@ import server.Connection;
 import server.User;
 
 import net.sf.json.JSONObject;
-import net.sf.json.JSONSerializer;
 
 public class Signup extends ServerCommand {
 	

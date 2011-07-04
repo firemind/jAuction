@@ -54,7 +54,7 @@ public class GetStockAll extends ServerCommand {
 			ArrayList<HashMap> stocks = new ArrayList();
 			Iterator it = con.jAuctionServer.getResources().keySet().iterator();
 	    	while(it.hasNext()) {
-	    		Resource res  = (Resource) con.jAuctionServer.getResources().get(it.next());
+	    		Resource res  = con.jAuctionServer.getResources().get(it.next());
 				HashMap stock = new HashMap();
 		  		stock.put("resource_id", res.getId());
 		  		stock.put("amount", this.con.user.getStock(res.getId()));

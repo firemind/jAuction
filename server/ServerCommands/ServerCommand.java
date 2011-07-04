@@ -1,10 +1,8 @@
 package server.ServerCommands;
 
-import java.net.Socket;
 import java.util.HashMap;
 import server.*;
 import net.sf.json.JSONObject;
-import net.sf.json.JSONArray;
 import net.sf.json.JSONSerializer;
 
 public abstract class ServerCommand implements ServerCommandRules, Runnable{

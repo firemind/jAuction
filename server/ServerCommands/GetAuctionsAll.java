@@ -50,7 +50,7 @@ public class GetAuctionsAll extends ServerCommand {
 			ArrayList<HashMap> auctions = new ArrayList();
 	    	Iterator it = con.jAuctionServer.getAuctions().keySet().iterator();
 	    	while(it.hasNext()) {
-	    		Auction auc = (Auction) con.jAuctionServer.getAuctions().get(it.next());
+	    		Auction auc = con.jAuctionServer.getAuctions().get(it.next());
 				HashMap auc1 = new HashMap();
 				auc1.put("auction_id", auc.getId());
 				auc1.put("resource_id", auc.getResource().getId());

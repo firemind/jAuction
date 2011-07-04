@@ -7,7 +7,6 @@ import server.Connection;
 
 
 import net.sf.json.JSONObject;
-import net.sf.json.JSONSerializer;
 
 public class Login extends ServerCommand {
 	
@@ -48,9 +47,9 @@ public class Login extends ServerCommand {
 	
 	public void run(){
 		this.con.user = con.jAuctionServer.authenticateUser(username, password);
-		this.con.user.con = this.con;
 		String auth_key = null;
 		if(this.con.user != null){
+			this.con.user.con = this.con;
 			auth_key =  con.user.getAuthKey();
 		}
 		HashMap data = new HashMap();

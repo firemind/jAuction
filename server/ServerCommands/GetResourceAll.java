@@ -46,7 +46,7 @@ public class GetResourceAll extends ServerCommand {
 			ArrayList<HashMap> resources = new ArrayList();
 			Iterator it = con.jAuctionServer.getResources().keySet().iterator();
 	    	while(it.hasNext()) {
-	    		Resource res  = (Resource) con.jAuctionServer.getResources().get(it.next());
+	    		Resource res  = con.jAuctionServer.getResources().get(it.next());
 				long resource_id =  res.getId();
 				HashMap response = new HashMap();
 		  		response.put("resource_id", resource_id);

@@ -1,7 +1,6 @@
 package server;
 
 import java.util.HashMap;
-
 import net.sf.json.JSONObject;
 
 public class Auction {
@@ -63,9 +62,14 @@ public class Auction {
 	  }
 
   public JSONObject removeJson(){
-	  	HashMap data = new HashMap();
+	  	HashMap<String, Long> data = new HashMap<String, Long>();
 		data.put("auction_id", this.id);
-		JSONObject jsonObject = JSONObject.fromObject( data );
+		JSONObject jsonObject = null;
+		try{
+		  jsonObject = JSONObject.fromObject( data );
+		}catch(org.apache.commons.lang.exception.NestableRuntimeException e){
+		  e.printStackTrace();
+		}
 		return jsonObject;
 	  } 
   
@@ -89,7 +93,8 @@ public class Auction {
 	  AuctionEnder(Auction auc){
 		  this.auc = auc;
 	  }
-	  public void run(){
+	  @Override
+	public void run(){
 		  try {
 			  sleep(auc.getDuration());
 		  }catch(InterruptedException e) {}

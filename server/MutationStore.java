@@ -5,8 +5,6 @@ import java.util.ArrayList;
 import net.sf.json.JSONObject;
 import java.util.HashMap;
 
-import net.sf.json.JSONObject;
-
 public class MutationStore extends Observable{
 
 	private ArrayList<Mutation> mutations = new ArrayList();

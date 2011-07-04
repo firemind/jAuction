@@ -2,15 +2,9 @@ package server;
 
 import junit.framework.TestCase;
 
-import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.util.Hashtable;
-import java.lang.ClassNotFoundException;
 import java.io.*;
-import net.sf.json.JsonConfig;
-
 import net.sf.json.JSONObject;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONSerializer;
@@ -21,7 +15,7 @@ public class JAuctionServerTest extends TestCase {
 	Socket socket;
 	PrintWriter printWriter;
 	protected void setUp() throws Exception {
-		host = InetAddress.getLocalHost();
+		host = InetAddress.getByName("localhost");
 		socket = new Socket(host.getHostName(), 4444);
 		printWriter =
             new PrintWriter(
