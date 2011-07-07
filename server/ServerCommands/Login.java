@@ -27,6 +27,7 @@ public class Login extends ServerCommand {
 	public JSONObject responseSpecification(){
 		HashMap data = new HashMap();
 		data.put("auth_key", "String");
+		data.put("user_id", "long");
 		return super.specificationMapper("response", data);
 	}
 	
@@ -54,6 +55,7 @@ public class Login extends ServerCommand {
 		}
 		HashMap data = new HashMap();
 		data.put("auth_key", auth_key);
+		data.put("user_id", con.user.getId());
 		con.respond(responseName(), data);
 	}
 }
