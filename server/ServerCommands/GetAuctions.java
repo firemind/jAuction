@@ -22,7 +22,7 @@ public class GetAuctions extends ServerCommand {
 	
 	public JSONObject requestSpecification(){
 		HashMap data = new HashMap();
-		data.put("resource_id", "Long");
+		data.put("auction_id", "Long");
 		return super.specificationMapper("request", data);
 	}
 	

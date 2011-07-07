@@ -48,7 +48,7 @@ public class CancelAuction extends ServerCommand {
 	  	if(authenticate(auth_key)){
 	  		HashMap data = new HashMap(); 
 	  		data.put("auction_id", auction_id);
-	  		data.put("amount", this.con.jAuctionServer.cancelAuction(auction_id));
+	  		data.put("success", this.con.jAuctionServer.cancelAuction(auction_id));
 	  		con.respond(this.responseName(), data);
 	  	}
 	}
