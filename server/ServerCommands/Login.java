@@ -49,13 +49,13 @@ public class Login extends ServerCommand {
 	public void run(){
 		this.con.user = con.jAuctionServer.authenticateUser(username, password);
 		String auth_key = null;
+		HashMap data = new HashMap();
 		if(this.con.user != null){
 			this.con.user.con = this.con;
 			auth_key =  con.user.getAuthKey();
+			data.put("user_id", con.user.getId());
 		}
-		HashMap data = new HashMap();
 		data.put("auth_key", auth_key);
-		data.put("user_id", con.user.getId());
 		con.respond(responseName(), data);
 	}
 }
