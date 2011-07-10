@@ -36,7 +36,7 @@ public class BuyAuction extends ServerCommand {
 	public boolean parseJson(JSONObject data){
 		try {
 			this.auth_key 		= data.getString("auth_key");
-			this.auction_id 	= data.getInt("resource_id");
+			this.auction_id 	= data.getInt("auction_id");
 		}catch(net.sf.json.JSONException e){
 			con.badRequest();
 			return false;
