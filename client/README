@@ -1,4 +1,4 @@
-====================jAuctionClient======================
+=================  jAuction Client  ====================
 Author:         Victor Ruch
 Date:           11.07.11
 Description:    Example client for the jAuction protocol
@@ -19,3 +19,9 @@ get it and then you will login in atomaticly.
 
 Now you will see your username and your money on the top.
 
+
+===============  How to Build  =========================
+
+Import the jauctionfolder and the org folder to your 
+workspace. The libs you need to include are in the jar 
+folder. Please use eclipse to compile.
