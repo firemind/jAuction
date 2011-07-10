@@ -1,5 +1,6 @@
 package jauctionclient.view;
 import jauctionclient.commands.Model;
+import jauctionclient.datamodel.Resource;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
@@ -8,8 +9,6 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
-import java.awt.Dialog.ModalExclusionType;
-import java.awt.Dialog.ModalityType;
 import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.RowSpec;
@@ -19,28 +18,42 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JComboBox;
 import javax.swing.JSpinner;
-import javax.swing.JFormattedTextField;
-import javax.swing.text.DateFormatter;
 import java.awt.Dimension;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.util.Observable;
 import java.util.Observer;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import javax.swing.SpinnerNumberModel;
+import javax.swing.DefaultComboBoxModel;
+import java.awt.Color;
+import java.awt.event.ItemListener;
+import java.awt.event.ItemEvent;
 
 
 public class JDialogNewAuction extends JDialog implements Observer {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 431502548094942119L;
 	private final JPanel contentPanel = new JPanel();
 	private JComboBox cmbResource;
 	private JSpinner spinAmount;
 	private JSpinner spinPrice;
-	private JSpinner spinEndAuction;
+	private JComboBox cmbEndAuction;
+	private JLabel lblMessage;
 	private Model model;
+	private JButton createButton;
+	private JButton cancelButton;
+	private enum duration { SHORT, MEDIUM, LONG };
 
 	/**
 	 * Create the dialog.
 	 */
 	public JDialogNewAuction(JFrame jframe, Model model) {
 		super(jframe, true);
+		addWindowListener(new ThisWindowListener());
 		this.model = model;
 		model.addObserver(this);
 		setMinimumSize(new Dimension(292, 252));
@@ -73,6 +86,7 @@ public class JDialogNewAuction extends JDialog implements Observer {
 		}
 		{
 			cmbResource = new JComboBox();
+			cmbResource.addItemListener(new CmbResourceItemListener());
 			contentPanel.add(cmbResource, "4, 2, fill, default");
 		}
 		{
@@ -92,31 +106,33 @@ public class JDialogNewAuction extends JDialog implements Observer {
 			contentPanel.add(spinPrice, "4, 6");
 		}
 		{
-			JLabel lblEndAuctionOn = new JLabel("Seconds Left:");
-			contentPanel.add(lblEndAuctionOn, "2, 8, right, default");
+			JLabel lblEndAuctionOn = new JLabel("Duration:");
+			contentPanel.add(lblEndAuctionOn, "2, 8");
 		}
 		{
-			spinEndAuction = new JSpinner();
-			contentPanel.add(spinEndAuction, "4, 8");
+			cmbEndAuction = new JComboBox();
+			cmbEndAuction.setModel(new DefaultComboBoxModel(duration.values()));
+			contentPanel.add(cmbEndAuction, "4, 8");
 		}
 		{
-			JLabel lblLblmessage = new JLabel("");
-			lblLblmessage.setVisible(false);
-			contentPanel.add(lblLblmessage, "4, 10");
+			lblMessage = new JLabel("");
+			this.lblMessage.setForeground(Color.RED);
+			lblMessage.setVisible(false);
+			contentPanel.add(lblMessage, "4, 10");
 		}
 		{
 			JPanel buttonPane = new JPanel();
 			buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
 			getContentPane().add(buttonPane, BorderLayout.SOUTH);
 			{
-				JButton CreateButton = new JButton("Create Auction");
-				CreateButton.addActionListener(new CreateButtonActionListener());
-				CreateButton.setActionCommand("CreateAuction");
-				buttonPane.add(CreateButton);
-				getRootPane().setDefaultButton(CreateButton);
+				createButton = new JButton("Create Auction");
+				createButton.addActionListener(new CreateButtonActionListener());
+				createButton.setActionCommand("CreateAuction");
+				buttonPane.add(createButton);
+				getRootPane().setDefaultButton(createButton);
 			}
 			{
-				JButton cancelButton = new JButton("Cancel");
+				cancelButton = new JButton("Cancel");
 				cancelButton.addActionListener(new CancelButtonActionListener());
 				cancelButton.setActionCommand("Cancel");
 				buttonPane.add(cancelButton);
@@ -124,19 +140,68 @@ public class JDialogNewAuction extends JDialog implements Observer {
 		}
 	}
 	
-	private class CreateButtonActionListener implements ActionListener {
-		public void actionPerformed(ActionEvent e) {
-			setVisible(false);
+	public JButton getCreateButton() {
+		return createButton;
+	}
+	public JButton getCancelButton() {
+		return cancelButton;
+	}
+	
+	protected void updateResourceAmount() {
+		if(cmbResource.getSelectedIndex() == -1){
+			spinAmount.setModel(new SpinnerNumberModel(0,0,0,10));
+			spinAmount.setEnabled(false);
+		} else {
+			long resource_id = ((Resource)cmbResource.getSelectedItem()).getId();
+			int max = model.getAllStock().get(resource_id).getAmount();
+			
+			spinAmount.setModel(new SpinnerNumberModel(1,1,max,10));
 		}
 	}
+	
+	private class CreateButtonActionListener implements ActionListener {
+		public void actionPerformed(ActionEvent e) {
+			if(cmbResource.getSelectedIndex() != -1) {
+				long resource_id = ((Resource)cmbResource.getSelectedItem()).getId();
+				int amount = ((SpinnerNumberModel)spinAmount.getModel()).getNumber().intValue();
+				int price = ((SpinnerNumberModel)spinPrice.getModel()).getNumber().intValue();
+				long time = 1000000000L;
+				if(duration.SHORT.equals(cmbEndAuction.getSelectedItem())) {
+					time = 1000000000L;
+				} else if (duration.MEDIUM.equals(cmbEndAuction.getSelectedItem())) {
+					time = 5000000000L;
+				} else if (duration.LONG.equals(cmbEndAuction.getSelectedItem())) {
+					time = 10000000000L;
+				}
+				
+				model.getOutputCommands().createAuction(resource_id, amount, price, time);
+				setVisible(false);
+			} else {
+				lblMessage.setText("please select a resource");
+				lblMessage.setVisible(true);
+			}
+		}
+	}	
 	private class CancelButtonActionListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
 			setVisible(false);
 		}
 	}
+	private class CmbResourceItemListener implements ItemListener {
+		public void itemStateChanged(ItemEvent e) {
+			updateResourceAmount();
+		}
+	}
+	private class ThisWindowListener extends WindowAdapter {
+		@Override
+		public void windowOpened(WindowEvent arg0) {
+			cmbResource.setModel(new DefaultComboBoxModel(model.getAllStockArray()));
+			updateResourceAmount();
+			spinPrice.setModel(new SpinnerNumberModel(1, 1, model.getMaximalAuctionPrice(), 10));
+		}
+	}
 	@Override
 	public void update(Observable o, Object arg) {
-		// TODO Auto-generated method stub
 		
 	}
 }

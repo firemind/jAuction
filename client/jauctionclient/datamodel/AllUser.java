@@ -20,6 +20,18 @@ public class AllUser extends AbstractModelObject{
 		all_users.remove(id);
 		firePropertyChange("allUser", null, all_users);
 	}
+	
+	public Integer size(){
+		return all_users.size();
+	}
+	
+	public User get(Long id) {
+		if(!all_users.containsKey(id)){
+			requestDataObject(new DataObjectEvent(this, id, "User"));
+			return null;
+		}
+		return all_users.get(id);
+	}	
 
 	public HashMap<Long, User> getAll() { return all_users; }
 }

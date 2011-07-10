@@ -1,14 +1,15 @@
 package jauctionclient.commands;
-import org.json.*;
 
-public class Notify extends ClientCommand {
-	private String message;
+import org.json.JSONObject;
+
+public class GetMoney extends ClientCommand {
+	private Integer money;
 	
 	@Override
 	public boolean parseInput(JSONObject json_object) {
 		try {
 			super.parseInput(json_object);
-			message = getData().getString("message");
+			money = getData().getInt("money");
 		} catch(Exception e) {
 			return false;
 		}
@@ -19,7 +20,7 @@ public class Notify extends ClientCommand {
 	public void run() {
 		Model m = getModel();
 		m.setModelChanged();
-		m.setMessage(message);
-		m.notifyObservers("newMessage");
+		m.getCurrentUser().setMoney(money);
+		m.notifyObservers("updateMoney");
 	}
 }

@@ -2,7 +2,7 @@ package jauctionclient.datamodel;
 
 public class Stock extends DataObject {
 	private Integer amount = 0;
-	private Long resource_id = null;
+	private Long resource_id = 0L;
 	
 	public Stock() {
 	}

@@ -10,14 +10,21 @@ import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.RowSpec;
 import com.jgoodies.forms.factories.FormFactory;
 import javax.swing.JScrollPane;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.text.TableView;
+
 import java.awt.Dimension;
 import java.util.Observable;
 import java.util.Observer;
 
 public class MyStock extends JPanel implements Observer {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 3531189051451861744L;
 	private JLabel lblMyStock;
 	private JTable tblMyStock;
-	private JScrollPane scrlpnMyStrock;
+	private JScrollPane scrlpnMyStock;
 	private Model model;
 
 	/**
@@ -37,7 +44,7 @@ public class MyStock extends JPanel implements Observer {
 				RowSpec.decode("default:grow"),
 				FormFactory.NARROW_LINE_GAP_ROWSPEC,}));
 		add(getLblMyStock(), "2, 2");
-		add(getScrlpnMyStrock(), "2, 4, fill, fill");	
+		add(getScrlpnMyStock(), "2, 4, fill, fill");	
 	}
 
 	
@@ -51,24 +58,27 @@ public class MyStock extends JPanel implements Observer {
 	private JTable getTblMyStock() {
 		if (tblMyStock == null) {
 			tblMyStock = new JTable();
+			tblMyStock.setRowSelectionAllowed(false);
 			tblMyStock.setPreferredScrollableViewportSize(new Dimension(178, 400));
 			tblMyStock.setFillsViewportHeight(true);
 		}
 		return tblMyStock;
 	}
 	
-	private JScrollPane getScrlpnMyStrock() {
-		if (scrlpnMyStrock == null) {
-			scrlpnMyStrock = new JScrollPane();
-			scrlpnMyStrock.setViewportView(getTblMyStock());
+	private JScrollPane getScrlpnMyStock() {
+		if (scrlpnMyStock == null) {
+			scrlpnMyStock = new JScrollPane();
+			scrlpnMyStock.setViewportView(getTblMyStock());
 		}
-		return scrlpnMyStrock;
+		return scrlpnMyStock;
 	}
 
 
 	@Override
 	public void update(Observable o, Object arg) {
-		// TODO Auto-generated method stub
-		
+		if(arg.equals("allStock") || arg.equals("allResource")){
+			getTblMyStock().setModel(model.getAllStockTable());
+			repaint();
+		}
 	}
 }

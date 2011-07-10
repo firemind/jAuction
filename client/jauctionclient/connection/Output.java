@@ -1,6 +1,4 @@
 package jauctionclient.connection;
-import jauctionclient.JSONEvent;
-import jauctionclient.JSONListener;
 
 import java.io.OutputStream;
 import java.io.PrintStream;

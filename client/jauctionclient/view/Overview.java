@@ -4,6 +4,7 @@ import jauctionclient.commands.Model;
 
 import javax.swing.JDialog;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.SwingUtilities;
@@ -19,8 +20,15 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.util.Observable;
 import java.util.Observer;
+import javax.swing.ListSelectionModel;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 public class Overview extends JPanel implements Observer {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -6224907092214880827L;
 	private JTabbedPane tabbedPane;
 	private JPanel paneAuctions;
 	private JPanel paneMyAuctions;
@@ -34,6 +42,7 @@ public class Overview extends JPanel implements Observer {
 	private JButton btnCreateNewAuction;
 	private JButton btnCancelAuction;
 	private JDialogNewAuction diaNewAuction;
+	private JOptionPane buyAuctionDialog;
 	private Model model;
 
 	/**
@@ -49,6 +58,8 @@ public class Overview extends JPanel implements Observer {
 	public JTable getTblAuctions() {
 		if (tblAuctions == null) {
 			tblAuctions = new JTable();
+			tblAuctions.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
+			tblAuctions.setFillsViewportHeight(true);
 		}
 		return tblAuctions;
 	}
@@ -63,6 +74,8 @@ public class Overview extends JPanel implements Observer {
 	public JTable getTblMyAuctions() {
 		if (tblMyAuctions == null) {
 			tblMyAuctions = new JTable();
+			tblMyAuctions.setFillsViewportHeight(true);
+			tblMyAuctions.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
 		}
 		return tblMyAuctions;
 	}
@@ -145,26 +158,49 @@ public class Overview extends JPanel implements Observer {
 		return scrollPane;
 	}
 	
-
+	private JOptionPane getBuyAuctionDialog() {
+		if (buyAuctionDialog == null) {
+			buyAuctionDialog = new JOptionPane(
+				    "The only way to close this dialog is by\n"
+				    + "pressing one of the following buttons.\n"
+				    + "Do you understand?",
+				    JOptionPane.QUESTION_MESSAGE,
+				    JOptionPane.YES_NO_OPTION);	
+		}
+		return buyAuctionDialog;
+	}
+	
 	private class BtnBuyActionListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
-			System.out.print("pressed");
+			int row = getTblAuctions().getSelectedRow();
+
+			if(row != 1){
+				model.getOutputCommands().buyAuction((Long)getTblAuctions().getValueAt(row, 0));
+			}
 		}
-	}
+	}	
+	
 	private class BtnCreateNewAuctionActionListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
 			getDiaNewAuction().setVisible(true);
-			System.out.print("pressed");	
 		}
 	}
 	private class BtnCancelAuctionActionListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
-			System.out.print("pressed");
+			int row = getTblMyAuctions().getSelectedRow();
+			if(row != 1){
+				model.getOutputCommands().cancelAuction((Long)getTblMyAuctions().getValueAt(row, 0));
+			}
 		}
 	}
 	@Override
 	public void update(Observable o, Object arg) {
-		// TODO Auto-generated method stub
-		
+		if(arg.equals("allAuction")) {
+			getTblAuctions().setModel(model.getAllAuctionTable());
+			repaint();
+		}else if(arg.equals("myAuction")){
+			getTblMyAuctions().setModel(model.getAllMyAuctionTable());
+			repaint();
+		}
 	}
 }

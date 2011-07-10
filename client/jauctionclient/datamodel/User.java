@@ -10,7 +10,6 @@ public class User extends DataObject {
 		setId(id);
 		this.setName(name);
 	}
-	
 
 	public void setName(String name) {
 		this.name = name;

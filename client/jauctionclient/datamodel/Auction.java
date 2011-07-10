@@ -2,11 +2,11 @@ package jauctionclient.datamodel;
 
 
 public class Auction extends DataObject {
-	private Long user_id;
-	private Integer amount;
-	private Long resource_id;
-	private Integer price;
-	private Long timeleft_sec;
+	private Long user_id = 0L;
+	private Integer amount = 0;
+	private Long resource_id = 0L;
+	private Integer price = 0;
+	private Long timeleft_sec = 0L;
 	
 	public Auction() {
 	}
@@ -51,7 +51,7 @@ public class Auction extends DataObject {
 	public Long getTimeleftSec() {
 		return this.timeleft_sec;	
 	}
-	public void setTimeleft_sec(Long timeleftSec) {
-		timeleft_sec = timeleftSec;
+	public void setTimeleft_sec(Long timeleft_sec) {
+		this.timeleft_sec = timeleft_sec;
 	}
 }

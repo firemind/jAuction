@@ -1,7 +1,7 @@
 package jauctionclient.datamodel;
 
 public class Resource extends DataObject {
-	private String name;
+	private String name = "";
 
 	public Resource() {
 	}
@@ -10,7 +10,6 @@ public class Resource extends DataObject {
 		setId(id);
 		this.name = name;
 	}
-
 	
 	public String getName()	{
 		return name; 
@@ -18,5 +17,10 @@ public class Resource extends DataObject {
 	
 	public void setName(String name) {
 		this.name = name; 
+	}
+	
+	@Override
+	public String toString() {
+		return name;
 	}
 }

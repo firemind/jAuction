@@ -1,6 +1,7 @@
 package jauctionclient.view;
 
 import jauctionclient.commands.Model;
+import jauctionclient.datamodel.CurrentUser;
 
 import javax.swing.JPanel;
 import com.jgoodies.forms.layout.FormLayout;
@@ -14,6 +15,10 @@ import java.util.Observable;
 import java.util.Observer;
 
 public class MyData extends JPanel implements Observer {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 5506129463852649454L;
 	private JLabel lblMyData;
 	private JLabel lblNameDisplay;
 	private JLabel lblMoneyDisplay;
@@ -88,8 +93,16 @@ public class MyData extends JPanel implements Observer {
 	@Override
 	public void update(Observable o, Object arg) {
 		if(arg.equals("login")){
-			if((Boolean) model.getCurrentUser().isLogon()) {
-				
+			CurrentUser cu = model.getCurrentUser();
+			if(cu.isLogon()) {
+				lblName.setText(cu.getName());
+				repaint();
+			}
+		}else if(arg.equals("updateMoney")){
+			CurrentUser cu = model.getCurrentUser();
+			if(cu.isLogon()) {
+				lblMoney.setText(Integer.toString(cu.getMoney()));
+				repaint();
 			}
 		}
 	}

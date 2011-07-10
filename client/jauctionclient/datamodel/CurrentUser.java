@@ -6,6 +6,7 @@ public class CurrentUser extends DataObject {
 	private String name = "";
 	private Integer money = 0;
 	private String auth_id = "";
+	private String password = "";
 	
 	private CurrentUser(){	
 	}
@@ -16,6 +17,11 @@ public class CurrentUser extends DataObject {
 		}
 		return current_user;
 	}
+	
+	public void setId(Long id) {
+		super.setId(id);
+	}
+	
 
 	public Boolean isLogon() {
 		return is_logon; 
@@ -53,5 +59,13 @@ public class CurrentUser extends DataObject {
 		String oldAuthId = this.auth_id;
 		this.auth_id = auth_id; 
 		firePropertyChange("authId", oldAuthId, this.auth_id);
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
 	}
 }

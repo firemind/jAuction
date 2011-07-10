@@ -2,13 +2,12 @@ package jauctionclient.commands;
 
 import jauctionclient.datamodel.Auction;
 
-import org.json.*;
+import org.json.JSONException;
+import org.json.JSONObject;
 
-
-public class NewAuction extends ClientCommand {
+public class GetAuctions extends ClientCommand {
 	private Auction auction;
 	
-	@Override
 	public boolean parseInput(JSONObject json_object) {
 		try {
 			super.parseInput(json_object);
@@ -28,11 +27,10 @@ public class NewAuction extends ClientCommand {
 		return true;
 	}
   
-	@Override
 	public void run() {
 		Model m = getModel();
-		m.setModelChanged();
-		if(auction.getUserId() == m.getCurrentUser().getId()) {
+		m.setModelChanged();		
+		if (auction.getUserId() == m.getCurrentUser().getId()) {
 			m.getAllMyAuction().addInstance(auction);
 			m.notifyObservers("myAuction");
 		} else {

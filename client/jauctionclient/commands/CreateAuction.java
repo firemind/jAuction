@@ -1,25 +1,27 @@
 package jauctionclient.commands;
-import org.json.*;
 
-public class Notify extends ClientCommand {
-	private String message;
+import org.json.JSONObject;
+
+public class CreateAuction extends ClientCommand{
+	private long auction_id;
 	
+
 	@Override
 	public boolean parseInput(JSONObject json_object) {
 		try {
 			super.parseInput(json_object);
-			message = getData().getString("message");
+			auction_id = getData().getLong("auction_id");
 		} catch(Exception e) {
 			return false;
 		}
 		return true;
 	}
   
+
 	@Override
 	public void run() {
 		Model m = getModel();
-		m.setModelChanged();
-		m.setMessage(message);
-		m.notifyObservers("newMessage");
+		m.setMessage("Auction "+auction_id+" successfully created.");
+		m.getOutputCommands().getStockAll();
 	}
 }

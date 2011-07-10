@@ -1,4 +1,4 @@
-package jauctionclient;
+package jauctionclient.connection;
 
 import java.util.EventListener;
 

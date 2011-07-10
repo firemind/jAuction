@@ -1,7 +1,5 @@
 package jauctionclient.connection;
 
-import jauctionclient.JSONEvent;
-import jauctionclient.JSONListener;
 
 import java.net.*;
 import java.io.*;
@@ -9,11 +7,11 @@ import java.io.*;
 public class Connection implements JSONListener {
 	private String host;
 	private Integer port;
-	private Socket server;
-	private Input input;
-	private Output output;
+	private Socket server = null;
+	private Input input = null;
+	private Output output = null;
 	
-	public Connection(String host, Integer port){
+	public Connection(String host, Integer port) throws IOException {
 		this.host = host;
 		this.port = port;
 		
@@ -23,10 +21,9 @@ public class Connection implements JSONListener {
 			this.input = new Input(this.server.getInputStream());
 			this.input.start();
 			this.output = new Output(this.server.getOutputStream());
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
 		} catch (IOException e) {
-			e.printStackTrace();
+			this.close();
+			throw e;
 		}
 	}
 	
@@ -47,7 +44,7 @@ public class Connection implements JSONListener {
 	
 	public String getHost() { return this.host; }
 
-	public int getPort() { return this.port; }
+	public Integer getPort() { return this.port; }
 
 	public Input getInput() { return this.input; }
 
@@ -55,10 +52,15 @@ public class Connection implements JSONListener {
 
 	public void close() {
 		try {
-			server.close();
-			input.close();
-			output.close();
+			if (server != null)
+				server.close();
+			if (input != null)
+				input.close();
+			if (output != null)
+				output.close();
 			System.out.println("Connection closed");
-		} catch (IOException e) {}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 }
