@@ -1,0 +1,21 @@
+====================jAuctionClient======================
+Author:         Victor Ruch
+Date:           11.07.11
+Description:    Example client for the jAuction protocol
+                please take a look at 
+                https://github.com/servasat/jAuction/
+
+========================================================
+
+How To Start:
+
+Please run the file jAuctionClient.jar with
+
+$ java -jar jAuctionClient.jar
+
+A dialog should appear for the login. Please enter then
+a username and a password. if you aren't sign up you will
+get it and then you will login in atomaticly.
+
+Now you will see your username and your money on the top.
+
