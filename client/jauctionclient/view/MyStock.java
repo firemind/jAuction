@@ -2,20 +2,19 @@ package jauctionclient.view;
 
 import jauctionclient.commands.Model;
 
-import javax.swing.JPanel;
-import javax.swing.JLabel;
-import javax.swing.JTable;
-import com.jgoodies.forms.layout.FormLayout;
-import com.jgoodies.forms.layout.ColumnSpec;
-import com.jgoodies.forms.layout.RowSpec;
-import com.jgoodies.forms.factories.FormFactory;
-import javax.swing.JScrollPane;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.text.TableView;
-
 import java.awt.Dimension;
 import java.util.Observable;
 import java.util.Observer;
+
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+
+import com.jgoodies.forms.factories.FormFactory;
+import com.jgoodies.forms.layout.ColumnSpec;
+import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.forms.layout.RowSpec;
 
 public class MyStock extends JPanel implements Observer {
 	/**

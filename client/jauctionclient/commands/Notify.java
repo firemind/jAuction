@@ -1,5 +1,5 @@
 package jauctionclient.commands;
-import org.json.*;
+import org.json.JSONObject;
 
 public class Notify extends ClientCommand {
 	private String message;

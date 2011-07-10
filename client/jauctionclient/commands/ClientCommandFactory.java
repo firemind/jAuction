@@ -24,6 +24,7 @@ public class ClientCommandFactory {
     	client_commands.put("notify", Notify.class.toString());
     	client_commands.put("new_auction", NewAuction.class.toString());
     	client_commands.put("auction_sold", AuctionSold.class.toString());
+    	client_commands.put("auction_remove", AuctionRemoved.class.toString());
     	client_commands.put("auction_removed", AuctionRemoved.class.toString());
     	client_commands.put("update_stock", UpdateStock.class.toString());
     	client_commands.put("update_money", UpdateMoney.class.toString());

@@ -3,16 +3,18 @@ package jauctionclient.view;
 import jauctionclient.commands.Model;
 import jauctionclient.datamodel.CurrentUser;
 
-import javax.swing.JPanel;
-import com.jgoodies.forms.layout.FormLayout;
-import com.jgoodies.forms.layout.ColumnSpec;
-import com.jgoodies.forms.layout.RowSpec;
-import com.jgoodies.forms.factories.FormFactory;
-import javax.swing.JLabel;
-import java.awt.Font;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.util.Observable;
 import java.util.Observer;
+
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+
+import com.jgoodies.forms.factories.FormFactory;
+import com.jgoodies.forms.layout.ColumnSpec;
+import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.forms.layout.RowSpec;
 
 public class MyData extends JPanel implements Observer {
 	/**

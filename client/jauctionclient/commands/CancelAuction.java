@@ -21,14 +21,16 @@ public class CancelAuction extends ClientCommand{
 	@Override
 	public void run() {
 		Model m = getModel();
-		m.setModelChanged();
 		if(success){
+			m.setModelChanged();
 			m.setMessage("Canceled auction "+auction_id+"");
 			m.getAllMyAuction().removeInstance(auction_id);
+			m.notifyObservers("myAuction");
 		}else{
+			m.setModelChanged();
 			m.setMessage("Could not cancel auction "+auction_id+"!");
 			m.getOutputCommands().getAuctionsAll();
+			m.notifyObservers("notify");
 		}
-		m.notifyObservers("myAuction");
 	}
 }

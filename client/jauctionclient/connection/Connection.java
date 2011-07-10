@@ -1,8 +1,8 @@
 package jauctionclient.connection;
 
 
-import java.net.*;
-import java.io.*;
+import java.io.IOException;
+import java.net.Socket;
 
 public class Connection implements JSONListener {
 	private String host;

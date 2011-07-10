@@ -1,6 +1,7 @@
 package jauctionclient.connection;
 
 import java.util.EventObject;
+
 import org.json.JSONObject;
 
 public class JSONEvent extends EventObject { 

@@ -1,9 +1,9 @@
 package jauctionclient.commands;
 
-import java.util.LinkedList;
-
 import jauctionclient.datamodel.AllStock;
 import jauctionclient.datamodel.Stock;
+
+import java.util.LinkedList;
 
 import org.json.JSONArray;
 import org.json.JSONObject;

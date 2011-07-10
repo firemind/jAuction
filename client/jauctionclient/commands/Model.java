@@ -13,16 +13,20 @@ import jauctionclient.datamodel.DataObjectEvent;
 import jauctionclient.datamodel.DataObjectListener;
 import jauctionclient.datamodel.Resource;
 import jauctionclient.datamodel.Stock;
-import jauctionclient.datamodel.User;
 
 import java.io.IOException;
 import java.net.ConnectException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.Observable;
+import java.util.Queue;
 
 import javax.swing.event.EventListenerList;
 import javax.swing.table.DefaultTableModel;
 
-import org.json.*;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class Model extends Observable {
 	private final AllAuction all_auction = new AllAuction();
@@ -105,7 +109,7 @@ public class Model extends Observable {
 		return port;
 	}
 
-	public DefaultTableModel getAllStockTable() {
+	public synchronized DefaultTableModel getAllStockTable() {
 		Object[][] stock = new Object[getAllStock().size()][5];
 		Object[] tableHeader = {
 				"Resource",
@@ -126,7 +130,7 @@ public class Model extends Observable {
 		return new NoEditableTableModel(stock, tableHeader);
 	}
 	
-	public DefaultTableModel getAllResourceTable() {
+	public synchronized DefaultTableModel getAllResourceTable() {
 		Object[] tableHeader = {
 				"Resource",
 				"Name"
@@ -136,7 +140,7 @@ public class Model extends Observable {
 		return new NoEditableTableModel(resource, tableHeader);
 	}
 	
-	public DefaultTableModel getAllAuctionTable() {
+	public synchronized DefaultTableModel getAllAuctionTable() {
 		Object[][] auction = new Object[getAllAuction().size()][5];
 		Object[] tableHeader = {
 				"Id",
@@ -165,7 +169,7 @@ public class Model extends Observable {
 		return new NoEditableTableModel(auction, tableHeader);
 	}
 	
-	public DefaultTableModel getAllMyAuctionTable() {
+	public synchronized DefaultTableModel getAllMyAuctionTable() {
 		Object[][] auction = new Object[getAllMyAuction().size()][5];
 		Object[] tableHeader = {
 				"Id",
@@ -181,7 +185,7 @@ public class Model extends Observable {
 			if(getAllResource().get(auc.getResourceId()) == null) {
 				auction[i][1] = "-";
 			} else {
-				getAllResource().get(auc.getResourceId()).getName();
+				auction[i][1] = getAllResource().get(auc.getResourceId()).getName();
 			}
 			auction[i][2] = auc.getAmount();
 			auction[i][3] = auc.getPrice();
@@ -453,11 +457,11 @@ public class Model extends Observable {
 		}
 		
 		@Override
-		public void jsonReceived(JSONEvent e) {
+		public synchronized void jsonReceived(JSONEvent e) {
 			ClientCommand command;
 			try {
 				command = this.factory.getCommand(e.getJson().getString("command"));
-				if(command.parseInput(e.getJson())) {
+				if (command != null && command.parseInput(e.getJson())){
 					command.run();
 				} else {
 					System.out.println("Bad command: "+e.getJson().getString("command"));

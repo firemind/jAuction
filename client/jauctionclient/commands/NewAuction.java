@@ -2,7 +2,8 @@ package jauctionclient.commands;
 
 import jauctionclient.datamodel.Auction;
 
-import org.json.*;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 
 public class NewAuction extends ClientCommand {

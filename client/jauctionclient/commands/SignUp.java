@@ -1,6 +1,6 @@
 package jauctionclient.commands;
 
-import org.json.*;
+import org.json.JSONObject;
 
 
 public class SignUp extends ClientCommand {

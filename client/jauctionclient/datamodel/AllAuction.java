@@ -9,13 +9,13 @@ public class AllAuction extends AbstractModelObject {
 		all_auctions.put(auction.getId(), auction);
 		firePropertyChange("allAuction", null, all_auctions);
 	}
-	public void addInstance(Long id, Long user_id, Integer amount, Long resource_id, Integer price, Long timeleft_sec) {
+	public synchronized void addInstance(Long id, Long user_id, Integer amount, Long resource_id, Integer price, Long timeleft_sec) {
 		Auction auction = new Auction(id, user_id, amount, resource_id, price, timeleft_sec);
 		all_auctions.put(auction.getId(), auction);
 		firePropertyChange("allAuction", null, all_auctions);
 	}
 
-	public void removeInstance(Long id) {
+	public synchronized void removeInstance(Long id) {
 		all_auctions.remove(id);
 		firePropertyChange("allAuction", null, all_auctions);
 	}

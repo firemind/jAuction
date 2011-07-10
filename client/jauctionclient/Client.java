@@ -1,12 +1,9 @@
 package jauctionclient;
 
-import java.awt.EventQueue;
-import java.io.IOException;
-import java.net.ConnectException;
-
 import jauctionclient.commands.Model;
-import jauctionclient.connection.Connection;
-import jauctionclient.view.*;
+import jauctionclient.view.MainView;
+
+import java.awt.EventQueue;
 
 public class Client {
 	/**

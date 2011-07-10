@@ -10,13 +10,13 @@ public class AllResource extends AbstractModelObject {
 		firePropertyChange("allResource", null, all_resources);
 	}
 	
-	public void addInstance(Long id, String name) {
+	public synchronized void addInstance(Long id, String name) {
 		Resource resource = new Resource(id, name);
 		all_resources.put(resource.getId(), resource);
 		firePropertyChange("allResource", null, all_resources);
 	}
 
-	public void removeInstance(Long id) {
+	public synchronized void removeInstance(Long id) {
 		all_resources.remove(id);
 		firePropertyChange("allResource", null, all_resources);
 	}

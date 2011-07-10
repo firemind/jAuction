@@ -5,9 +5,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.SocketException;
 
-import javax.print.attribute.standard.Sides;
 import javax.swing.event.EventListenerList;
 
 import org.json.JSONException;
@@ -52,15 +50,13 @@ public class Input extends Thread {
 			this.input = input;
 		}
 		
-		public void run(){
-			synchronized (wait_for_command) {				
-				try {
-					event = new JSONEvent(this, new JSONObject(input));
-					for ( JSONListener listener : listeners.getListeners( JSONListener.class ) )
-						listener.jsonReceived( event );
-				} catch (JSONException e){
-					System.out.println("Bad Request: "+ input);
-				}
+		public void run(){				
+			try {
+				event = new JSONEvent(this, new JSONObject(input));
+				for ( JSONListener listener : listeners.getListeners( JSONListener.class ) )
+					listener.jsonReceived( event );
+			} catch (JSONException e){
+				System.out.println("Bad Request: "+ input);
 			}
 		}
 	}

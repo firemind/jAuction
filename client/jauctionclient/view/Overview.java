@@ -2,27 +2,24 @@ package jauctionclient.view;
 
 import jauctionclient.commands.Model;
 
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.Observable;
+import java.util.Observer;
+
+import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JTabbedPane;
-import javax.swing.SwingUtilities;
-
-import java.awt.BorderLayout;
 import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
 import javax.swing.JTable;
-import java.awt.FlowLayout;
-import javax.swing.JButton;
-import java.awt.ComponentOrientation;
-import javax.swing.SwingConstants;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
-import java.util.Observable;
-import java.util.Observer;
 import javax.swing.ListSelectionModel;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
+import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 
 public class Overview extends JPanel implements Observer {
 	/**
@@ -188,7 +185,7 @@ public class Overview extends JPanel implements Observer {
 	private class BtnCancelAuctionActionListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
 			int row = getTblMyAuctions().getSelectedRow();
-			if(row != 1){
+			if(row != -1){
 				model.getOutputCommands().cancelAuction((Long)getTblMyAuctions().getValueAt(row, 0));
 			}
 		}

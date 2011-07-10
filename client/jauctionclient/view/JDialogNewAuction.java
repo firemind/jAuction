@@ -3,33 +3,33 @@ import jauctionclient.commands.Model;
 import jauctionclient.datamodel.Resource;
 
 import java.awt.BorderLayout;
-import java.awt.FlowLayout;
-
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
-import com.jgoodies.forms.layout.FormLayout;
-import com.jgoodies.forms.layout.ColumnSpec;
-import com.jgoodies.forms.layout.RowSpec;
-import com.jgoodies.forms.factories.FormFactory;
-
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JComboBox;
-import javax.swing.JSpinner;
+import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.event.ActionListener;
+import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
-import java.util.Observable;
-import java.util.Observer;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import javax.swing.SpinnerNumberModel;
+import java.util.Observable;
+import java.util.Observer;
+
 import javax.swing.DefaultComboBoxModel;
-import java.awt.Color;
-import java.awt.event.ItemListener;
-import java.awt.event.ItemEvent;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JSpinner;
+import javax.swing.SpinnerNumberModel;
+import javax.swing.border.EmptyBorder;
+
+import com.jgoodies.forms.factories.FormFactory;
+import com.jgoodies.forms.layout.ColumnSpec;
+import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.forms.layout.RowSpec;
 
 
 public class JDialogNewAuction extends JDialog implements Observer {
