@@ -2,6 +2,7 @@ package server;
 import java.net.Socket;
 import java.io.*;
 
+import server.MutationStore.Mutation;
 import server.ServerCommands.*;
 import net.sf.json.JSONObject;
 import net.sf.json.JSONSerializer;
@@ -29,11 +30,8 @@ public class Connection implements Runnable, Observer {
      * Searches for new Mutations and sends them through the socket
      */
     public void update(Observable obs, Object obj){
-    	MutationStore mutSto = (MutationStore) obs;
-    	for (MutationStore.Mutation m : mutSto.getMutations(last_mutation)){
-    		last_mutation = m.getId();
-    		send(m.getJson());
-    	}
+    	Mutation m = (Mutation) obj;
+    	send(m.getJson());
     }
 
     

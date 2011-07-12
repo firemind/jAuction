@@ -1,5 +1,6 @@
 package server;
 
+import java.util.Date;
 import java.util.HashMap;
 import net.sf.json.JSONObject;
 
@@ -10,20 +11,20 @@ public class Auction {
   private int duration;
   private int price;
   private User user;
+  private Date created_at;
+  private User highest_bidder = null;
+  private long highest_bid = 0;
   AuctionEnder ender;
-  JAuctionServer jAuctionServer;
   
-  Auction(JAuctionServer jAuctionServer, long id, int amount, Resource resource, int duration, User user, int price){
+  Auction( long id, int amount, Resource resource, int duration, User user, int price){
 	  this.id = id;
 	  this.amount = amount;
-	  this.resource = resource;
+	  this.resource = resource;  
+	  this.created_at = new Date();
 	  this.duration = duration;
 	  this.user = user; 
 	  this.price = price;
-	  this.jAuctionServer = jAuctionServer;
 	  
-	  ender = new AuctionEnder(this);
-	  ender.start();
   }
   
   public Resource getResource(){
@@ -46,12 +47,34 @@ public class Auction {
 	  return this.price;
   }
   
-  public int getTimeleftSec(){
-	  return this.duration;
+  public long getTimeleftSec(){
+	  long now = (new Date().getTime() / 1000);
+	  long endtime = (this.created_at.getTime() / 1000) + this.duration;
+	  return endtime - now;
   }
 
   public long getId(){
 	  return this.id;
+  }
+  
+  public void bid(User bidder, long bid){
+	  if(this.hasBidder())
+		  this.highest_bidder.releaseBid(this, this.highest_bid);
+	  
+	  this.highest_bidder = bidder;
+	  this.highest_bid = bid;
+  }
+  
+  public boolean hasBidder(){
+	  return (this.highest_bidder != null);
+  }
+  
+  public User getHighestBidder(){
+	  return this.highest_bidder;
+  }
+  
+  public long getNextHigherBid(){
+	return highest_bid + 1;  
   }
   
   public JSONObject soldJson(){
@@ -84,21 +107,5 @@ public class Auction {
 	JSONObject jsonObject = JSONObject.fromObject( data );
 	return jsonObject;
   }
-  public void end(){
-	  this.jAuctionServer.cancelAuction(this.getId());
-	  System.out.println("Auction Ended");
-  }
-  private class AuctionEnder extends Thread{
-	  Auction auc;
-	  AuctionEnder(Auction auc){
-		  this.auc = auc;
-	  }
-	  @Override
-	public void run(){
-		  try {
-			  sleep(auc.getDuration());
-		  }catch(InterruptedException e) {}
-		  auc.end();
-	  }
-  }
+
 }

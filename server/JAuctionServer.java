@@ -22,6 +22,7 @@ public class JAuctionServer {
     private static int maxConnections = 0;
 
     private MutationStore mutationStore;
+    private AuctionEnder auctionEnder;
     public ServerCommandFactory serverCommandFactory = new ServerCommandFactory();
     
     private HashMap<Long, Resource> resources = new HashMap<Long, Resource>();
@@ -36,7 +37,10 @@ public class JAuctionServer {
     JAuctionServer(){
 
     	this.mutationStore = new MutationStore();
-    	
+    	this.auctionEnder = new AuctionEnder(this);
+		synchronized (this.auctionEnder){
+    	  this.auctionEnder.start();
+		}
     	Resource r1 = addResource("Gold");
     	Resource r2 = addResource("Silver");
     	Resource r3 = addResource("Iron");
@@ -68,18 +72,60 @@ public class JAuctionServer {
     	if(buyer.getMoney() < auction.getPrice())
     	  return false;
     	
+    	auction.bid(buyer, auction.getPrice());
+    	
+    	sellAuction(auction.getId());
+    	
+    	return true;
+    }
+
+    public void endAuction(Auction auction){
+  	  if(auction.hasBidder()){
+  		sellAuction(auction.getId());
+  	  }else{
+  	    cancelAuction(auction.getId());
+  	  }
+    }
+    
+    public synchronized boolean sellAuction(long auction_id){
+    	Auction auction = this.auctions.get(auction_id);
+    	User buyer = auction.getHighestBidder();
+    	
     	buyer.buyAuction(auction);
 
     	User seller = auction.getUser();
     	seller.sellAuction(auction);
     	
-    	this.mutationStore.addMutation("auction_remove", auction.removeJson());
     	auction.getUser().send("auction_sold", auction.soldJson());
-    	this.auctions.remove(auction.getId());
+    	this.removeAuction(auction_id);
     	
     	return true;
     }
-
+    
+    /**
+     * Tries to let user bid on auction                           
+     *
+     * @param  user_id Id of the user trying to bid on the auction
+     * @param  auction_id Id of the auction to be bid on
+     * @return boolean indicating weather bidding worked
+     */
+    public synchronized boolean bid(long user_id, long bid, long auction_id){
+    	if(!this.auctions.containsKey(auction_id))
+    	  return false;
+    	if(!this.users.containsKey(user_id))
+      	  return false;
+    	Auction auction = this.auctions.get(auction_id);
+    	User buyer = this.users.get(user_id);
+    	if(buyer.getMoney() < bid)
+      	  return false;
+    	if(bid < auction.getNextHigherBid())
+    	  return false;
+    	
+    	buyer.bidOn(auction, bid);
+    	
+    	return true;
+    }    
+    
     /**
      * Tries to cancel the auction                           
      *
@@ -91,15 +137,22 @@ public class JAuctionServer {
     	if(!this.auctions.containsKey(auction_id))
     	  return false;
     	Auction auction = this.auctions.get(auction_id);
-
     	
     	User seller = auction.getUser();
-    	seller.sellAuction(auction);
-    	seller.addStock(auction.getResource().getId(), auction.getAmount());
+    	seller.cancelAuction(auction);
     	
+    	this.removeAuction(auction_id);
+    	
+    	return true;
+    }
+    
+    private synchronized boolean removeAuction(long auction_id){
+    	if(!this.auctions.containsKey(auction_id))
+      	  return false;
+      	Auction auction = this.auctions.get(auction_id);
     	this.mutationStore.addMutation("auction_removed", auction.removeJson());
     	this.auctions.remove(auction.getId());
-    	
+    	this.auctionEnder.removeAuction(auction);
     	return true;
     }
     
@@ -117,8 +170,12 @@ public class JAuctionServer {
      */
     public Auction addAuction(int amount, Resource resource, int duration, User user, int price){
 
-    	Auction auc = new Auction(this, nextAuctionId, amount, resource, duration, user, price);
+    	Auction auc = new Auction(nextAuctionId, amount, resource, duration, user, price);
     	this.auctions.put(nextAuctionId++, auc);
+    	synchronized (this.auctionEnder) {
+    	  auctionEnder.notify();
+    	}
+    	auctionEnder.addAuction(auc);
     	user.createAuction(auc);
     	this.mutationStore.addMutation("new_auction", auc.toJson());
     	return auc;
@@ -202,6 +259,15 @@ public class JAuctionServer {
     }
     
     /**
+     * 
+     * @param auction_id
+     * @return
+     */
+    public Auction getAuctionById(long auction_id){
+    	return this.auctions.get(auction_id);
+    }
+    
+    /**
      * Filters all active auctions by resource_id and returns ArrayList of matches                
      *
      * @param  resource_id Id of resource to be filtered by.
@@ -231,7 +297,7 @@ public class JAuctionServer {
     public static void main(String[] args) throws Exception {
 
     	JAuctionServer jAuctionServer = new JAuctionServer();
-
+    	
 	    System.err.println("Started server on port " + port);
 	
 	    int con_counter=0;

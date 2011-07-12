@@ -19,7 +19,7 @@ public class MutationStore extends Observable{
 	   }
 	   mutations.add(next++, mutation);
 	   setChanged();
-	   notifyObservers();
+	   notifyObservers(mutation);
    }
    
    private static  int getTrueIndex(int i){

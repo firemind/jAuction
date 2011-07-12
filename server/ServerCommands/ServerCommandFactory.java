@@ -20,7 +20,8 @@ public class ServerCommandFactory {
     	serverCommands.put("get_stock_all", "GetStockAll");
     	serverCommands.put("get_resource", "GetResource");
     	serverCommands.put("get_resource_all", "GetResourceAll");
-    	serverCommands.put("get_auctions", "GetAuctions");
+    	serverCommands.put("get_auctions", "GetAuctionsByResource");
+    	serverCommands.put("get_auctions_by_resource", "GetAuctionsByResource");
     	serverCommands.put("get_auctions_all", "GetAuctionsAll");
     	serverCommands.put("create_auction", "CreateAuction");
     	serverCommands.put("buy_auction", "BuyAuction");

@@ -52,12 +52,20 @@ public class User {
 	  }
   }
   
+  private void inform_update_money(){
+	  HashMap data = new HashMap(); 
+  	  data.put("money_amount", this.money);
+	  this.send("update_money", data);
+  }
+  
   public void addMoney(long amount){
 	  this.money += amount;
+	  this.inform_update_money();
   }
   
   public void loseMoney(long amount){
 	  this.money -= amount;
+	  this.inform_update_money();
   }
 
   public void addStock(long res_id, long amount){
@@ -106,6 +114,20 @@ public class User {
 	removeAuction(auc);
   }
   
+  public void bidOn(Auction auction, long bid){
+	this.loseMoney(bid);
+  	auction.bid(this, bid);
+  }
+  
+  public void releaseBid(Auction auction, long bid){
+	  this.addMoney(bid);
+  }
+  
+  public void cancelAuction(Auction auc){
+	this.addStock(auc.getResource().getId(), auc.getAmount());
+	removeAuction(auc);
+  }
+  
   public void addAuction(Auction auc){
 	  this.auctions.put(auc.getId(), auc);
   }
@@ -124,7 +146,13 @@ public class User {
   
   public void send(String command, JSONObject data){
 	  if(this.con != null){
-		  this.con.send(data);
+		  this.con.respond(command, data);
+	  }
+  }
+  
+  public void send(String command, HashMap data){
+	  if(this.con != null){
+		  this.con.respond(command, data);
 	  }
   }
 }
